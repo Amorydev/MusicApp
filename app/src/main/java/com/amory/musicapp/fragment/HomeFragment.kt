@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.amory.musicapp.Interface.OnCLickArtist
+import com.amory.musicapp.R
 import com.amory.musicapp.adapter.PopularArtistsAdapter
 import com.amory.musicapp.adapter.PopularTrackAdapter
 import com.amory.musicapp.databinding.FragmentHomeBinding
@@ -77,7 +79,21 @@ class HomeFragment : Fragment() {
                 if (response.isSuccessful){
                     val items: MutableList<Artists>? = response.body()?.items
                     Log.d("trackArtist",response.body()?.items.toString())
-                    val adapter = PopularArtistsAdapter(items!!)
+                    val adapter = PopularArtistsAdapter(items!!, object : OnCLickArtist{
+                        override fun onCLickArtist(position: Int) {
+                            val selectedArtist = items[position]
+                            val fragment = DetailArtistFragment()
+
+                            val bundle = Bundle()
+                            bundle.putSerializable("selectedArtist", selectedArtist)
+                            fragment.arguments = bundle
+
+                            requireActivity().supportFragmentManager.beginTransaction()
+                                .replace(R.id.fragment_container, fragment)
+                                .addToBackStack(null)
+                                .commit()
+                        }
+                    })
                     binding.rvPopularArtists.adapter = adapter
                     binding.rvPopularArtists.layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.HORIZONTAL,false)
                     binding.rvPopularArtists.setHasFixedSize(true)

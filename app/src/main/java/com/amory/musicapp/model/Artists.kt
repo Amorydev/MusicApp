@@ -1,5 +1,8 @@
 package com.amory.musicapp.model
 
+import android.os.Parcelable
+import java.io.Serializable
+
 data class Artists(
     val id:String,
     val urn:String,
@@ -13,4 +16,4 @@ data class Artists(
     val thumbnail:String,
     val background:String,
     val totalLikes:Int
-)
+) : Serializable

@@ -68,4 +68,8 @@ dependencies {
 
     //recyclerView
     implementation ("androidx.recyclerview:recyclerview:1.3.2")
+    //EventBus
+    implementation("org.greenrobot:eventbus:3.3.1")
+    //Circle MusicWave
+    implementation ("com.gauravk.audiovisualizer:audiovisualizer:0.9.2")
 }

@@ -1,5 +1,7 @@
 package com.amory.musicapp.model
 
+import java.io.Serializable
+
 data class Track(
     val id:String,
     val urn:String,
@@ -13,4 +15,4 @@ data class Track(
     val totalLikes:Int,
     val audioFileIds:MutableList<String>,
     val artists:MutableList<Artists>
-)
+): Serializable

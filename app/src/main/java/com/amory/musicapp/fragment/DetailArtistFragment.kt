@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.amory.musicapp.Interface.OnCLickTrack
 import com.amory.musicapp.R
 import com.amory.musicapp.adapter.PopularTrackAdapter
 import com.amory.musicapp.databinding.FragmentDetailArtistBinding
@@ -77,7 +78,11 @@ class DetailArtistFragment : Fragment() {
         call.enqueue(object : Callback<TrackResponse> {
             override fun onResponse(call: Call<TrackResponse>, response: Response<TrackResponse>) {
                 val listTracks: MutableList<Track> = response.body()?.items!!
-                val adapter = PopularTrackAdapter(listTracks)
+                val adapter = PopularTrackAdapter(listTracks, object : OnCLickTrack{
+                    override fun onCLickTrack(position: Int) {
+
+                    }
+                })
                 binding.detailArtistRV.adapter = adapter
                 binding.detailArtistRV.layoutManager =
                     LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)

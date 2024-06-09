@@ -3,11 +3,12 @@ package com.amory.musicapp.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.amory.musicapp.Interface.OnCLickTrack
 import com.amory.musicapp.databinding.LayoutRecyclerviewPopularTrackBinding
 import com.amory.musicapp.model.Track
 import com.bumptech.glide.Glide
 
-class PopularTrackAdapter(private val listTrack: MutableList<Track>) : RecyclerView.Adapter<PopularTrackAdapter.ViewHolder>() {
+class PopularTrackAdapter(private val listTrack: MutableList<Track>, private val onCLickTrack: OnCLickTrack) : RecyclerView.Adapter<PopularTrackAdapter.ViewHolder>() {
 
     inner class ViewHolder(private val binding: LayoutRecyclerviewPopularTrackBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(data: Track) {
@@ -35,5 +36,8 @@ class PopularTrackAdapter(private val listTrack: MutableList<Track>) : RecyclerV
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(listTrack[position])
+        holder.itemView.setOnClickListener {
+            onCLickTrack.onCLickTrack(position)
+        }
     }
 }

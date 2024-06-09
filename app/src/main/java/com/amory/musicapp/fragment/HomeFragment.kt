@@ -1,5 +1,6 @@
 package com.amory.musicapp.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -8,7 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.amory.musicapp.Interface.OnCLickArtist
+import com.amory.musicapp.Interface.OnCLickTrack
 import com.amory.musicapp.R
+import com.amory.musicapp.activities.PlayMusicActivity
 import com.amory.musicapp.adapter.PopularArtistsAdapter
 import com.amory.musicapp.adapter.PopularTrackAdapter
 import com.amory.musicapp.databinding.FragmentHomeBinding
@@ -57,7 +60,13 @@ class HomeFragment : Fragment() {
                 if (response.isSuccessful){
                     val items: MutableList<Track>? = response.body()?.items
                     Log.d("trackPopular",response.body()?.items.toString())
-                    val adapter = PopularTrackAdapter(items!!)
+                    val adapter = PopularTrackAdapter(items!!, object : OnCLickTrack{
+                        override fun onCLickTrack(position: Int) {
+                            val intent = Intent(requireContext(),PlayMusicActivity::class.java)
+                            intent.putExtra("track",items[position])
+                            startActivity(intent)
+                        }
+                    })
                     binding.popularTracks.adapter = adapter
                     binding.popularTracks.layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
                     binding.popularTracks.setHasFixedSize(true)

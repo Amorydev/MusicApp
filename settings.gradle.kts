@@ -16,5 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "MusicApp"
 include(":app")
-include(":audiovisualizer")
 

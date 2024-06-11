@@ -1,0 +1,12 @@
+{
+  "client_id": "web",
+  "redirect_uri": "beatbuddy://oauth-callback",
+  "end_session_redirect_uri": "https://auth.beatbuddy.io.vn/realms/beatbuddy/protocol/openid-connect/logout",
+  "discovery_uri": "",
+  "authorization_endpoint_uri": "https://auth.beatbuddy.io.vn/realms/beatbuddy/protocol/openid-connect/auth",
+  "token_endpoint_uri": "https://auth.beatbuddy.io.vn/realms/beatbuddy/protocol/openid-connect/token",
+  "registration_endpoint_uri": "",
+  "user_info_endpoint_uri": "https://auth.beatbuddy.io.vn/realms/beatbuddy/protocol/openid-connect/userinfo",
+  "end_session_endpoint":  "https://auth.beatbuddy.io.vn/realms/beatbuddy/protocol/openid-connect/logout",
+  "https_required": true
+}

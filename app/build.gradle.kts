@@ -15,6 +15,7 @@ android {
         versionCode = 1
         versionName = "1.0"
         manifestPlaceholders.putIfAbsent("appAuthRedirectScheme", "com.amory.musicapp")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -25,7 +26,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-
         }
     }
     compileOptions {
@@ -61,8 +61,8 @@ dependencies {
     //Circle imageView
     implementation("de.hdodenhof:circleimageview:3.1.0")
     //okhttp
-    implementation("com.squareup.okhttp3:okhttp:4.9.1")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     //Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     //GSON Converter
@@ -76,4 +76,6 @@ dependencies {
     implementation("org.greenrobot:eventbus:3.3.1")
     //AppAuth
     implementation("net.openid:appauth:0.11.1")
+    implementation ("com.squareup.okio:okio:3.6.0")
+
 }

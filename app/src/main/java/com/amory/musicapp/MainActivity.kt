@@ -147,10 +147,22 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         inits()
+        getTokenClient()
+        if (mStateManager.getCurrent().isAuthorized) {
+            getTokenAuth()
+        }
+
     }
 
     private fun getTokenAuth() {
         val state: AuthState = mStateManager.getCurrent()
+
+        val expiresAt : Long? = state.accessTokenExpirationTime
+        if (expiresAt == null){
+            Log.d("TokenAuth","Không có thời hạn token")
+        }else if(expiresAt < System.currentTimeMillis()){
+            refreshAccessToken()
+        }
         val token = state.accessToken
         val editor = sharedPreferences.edit()
         editor.putString("tokenAuth", token)

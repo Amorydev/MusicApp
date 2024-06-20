@@ -110,8 +110,6 @@ class AuthStateManager private constructor(context: Context) {
             } else {
                 editor.putString(KEY_STATE, state.jsonSerializeString())
             }
-            if (!editor.commit()) {
-            }
         } finally {
             mPrefsLock.unlock()
         }

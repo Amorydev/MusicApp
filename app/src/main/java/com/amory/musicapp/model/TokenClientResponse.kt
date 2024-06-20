@@ -1,6 +1,6 @@
 package com.amory.musicapp.model
 
-data class TokenResponse(
+data class TokenClientResponse(
     val token:String,
     val tokenType:String,
     val expiresIn:Int

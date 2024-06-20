@@ -89,7 +89,9 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        mAuthService.dispose()
+        if (mAuthStateManager != null){
+            mAuthService.dispose()
+        }
     }
 
     @Deprecated("Deprecated in Java")
@@ -128,6 +130,19 @@ class LoginActivity : AppCompatActivity() {
                     )
                 )
             )
+            initializeClient()
+            return
+        }
+
+        if (mConfiguration.getDiscoveryUri() == null) {
+            assert(mConfiguration.getAuthEndpointUri() != null)
+            assert(mConfiguration.getTokenEndpointUri() != null)
+
+            val config = AuthorizationServiceConfiguration(
+                mConfiguration.getAuthEndpointUri()!!,
+                mConfiguration.getTokenEndpointUri()!!
+            )
+            mAuthStateManager.replace(AuthState(config))
             initializeClient()
             return
         }

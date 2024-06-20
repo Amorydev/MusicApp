@@ -12,6 +12,7 @@ import com.amory.musicapp.Interface.OnCLickArtist
 import com.amory.musicapp.Interface.OnCLickTrack
 import com.amory.musicapp.R
 import com.amory.musicapp.activities.PlayMusicActivity
+import com.amory.musicapp.activities.SearchActivity
 import com.amory.musicapp.adapter.PopularArtistsAdapter
 import com.amory.musicapp.adapter.PopularTrackAdapter
 import com.amory.musicapp.databinding.FragmentHomeBinding
@@ -28,6 +29,8 @@ import retrofit2.Response
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding ?= null
     private val binding get() = _binding!!
+    private var itemTrack : MutableList<Track> ?= null
+    private var itemArtists : MutableList<Artists> ?= null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,6 +49,21 @@ class HomeFragment : Fragment() {
         binding.searchET.requestFocus()
         getPopularTracks()
         getPopularArtist()
+        onCLickSearch()
+    }
+
+    private fun onCLickSearch() {
+        binding.searchET.setOnClickListener {
+            val intent = Intent(requireContext(), SearchActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        getPopularArtist()
+        getPopularTracks()
     }
 
     override fun onDestroy() {
@@ -58,18 +76,25 @@ class HomeFragment : Fragment() {
         callPopularTrack.enqueue(object : Callback<TrackResponse>{
             override fun onResponse(call: Call<TrackResponse>, response: Response<TrackResponse>) {
                 if (response.isSuccessful){
-                    val items: MutableList<Track>? = response.body()?.items
+                    itemTrack = response.body()?.items
                     Log.d("trackPopular",response.body()?.items.toString())
-                    val adapter = PopularTrackAdapter(items!!, object : OnCLickTrack{
-                        override fun onCLickTrack(position: Int) {
-                            val intent = Intent(requireContext(),PlayMusicActivity::class.java)
-                            intent.putExtra("track",items[position])
-                            startActivity(intent)
-                        }
-                    })
-                    binding.popularTracks.adapter = adapter
-                    binding.popularTracks.layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false)
-                    binding.popularTracks.setHasFixedSize(true)
+                    if (_binding != null) {
+                        val adapter = PopularTrackAdapter(itemTrack!!, object : OnCLickTrack {
+                            override fun onCLickTrack(position: Int) {
+                                val intent = Intent(requireContext(), PlayMusicActivity::class.java)
+                                intent.putExtra("track", itemTrack!![position])
+                                startActivity(intent)
+                            }
+                        })
+
+                        binding.popularTracks.adapter = adapter
+                        binding.popularTracks.layoutManager = LinearLayoutManager(
+                            requireContext(),
+                            LinearLayoutManager.VERTICAL,
+                            false
+                        )
+                        binding.popularTracks.setHasFixedSize(true)
+                    }
                 }
             }
 
@@ -86,26 +111,32 @@ class HomeFragment : Fragment() {
                 response: Response<ArtistResponse>
             ) {
                 if (response.isSuccessful){
-                    val items: MutableList<Artists>? = response.body()?.items
+                    itemArtists = response.body()?.items
                     Log.d("trackArtist",response.body()?.items.toString())
-                    val adapter = PopularArtistsAdapter(items!!, object : OnCLickArtist{
-                        override fun onCLickArtist(position: Int) {
-                            val selectedArtist = items[position]
-                            val fragment = DetailArtistFragment()
+                    if (_binding != null) {
+                        val adapter = PopularArtistsAdapter(itemArtists!!, object : OnCLickArtist {
+                            override fun onCLickArtist(position: Int) {
+                                val selectedArtist = itemArtists!![position]
+                                val fragment = DetailArtistFragment()
 
-                            val bundle = Bundle()
-                            bundle.putSerializable("selectedArtist", selectedArtist)
-                            fragment.arguments = bundle
+                                val bundle = Bundle()
+                                bundle.putSerializable("selectedArtist", selectedArtist)
+                                fragment.arguments = bundle
 
-                            requireActivity().supportFragmentManager.beginTransaction()
-                                .replace(R.id.fragment_container, fragment)
-                                .addToBackStack(null)
-                                .commit()
-                        }
-                    })
-                    binding.rvPopularArtists.adapter = adapter
-                    binding.rvPopularArtists.layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.HORIZONTAL,false)
-                    binding.rvPopularArtists.setHasFixedSize(true)
+                                requireActivity().supportFragmentManager.beginTransaction()
+                                    .replace(R.id.fragment_container, fragment)
+                                    .addToBackStack(null)
+                                    .commit()
+                            }
+                        })
+                        binding.rvPopularArtists.adapter = adapter
+                        binding.rvPopularArtists.layoutManager = LinearLayoutManager(
+                            requireContext(),
+                            LinearLayoutManager.HORIZONTAL,
+                            false
+                        )
+                        binding.rvPopularArtists.setHasFixedSize(true)
+                    }
                 }
             }
 

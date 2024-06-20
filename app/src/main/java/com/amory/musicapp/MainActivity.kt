@@ -14,7 +14,7 @@ import com.amory.musicapp.databinding.ActivityMainBinding
 import com.amory.musicapp.fragment.HomeFragment
 import com.amory.musicapp.fragment.LibraryFragment
 import com.amory.musicapp.fragment.ProfileFragment
-import com.amory.musicapp.model.TokenResponse
+import com.amory.musicapp.model.TokenClientResponse
 import com.amory.musicapp.retrofit.APICallToken
 import com.amory.musicapp.retrofit.RetrofitClient
 import net.openid.appauth.AppAuthConfiguration
@@ -24,6 +24,7 @@ import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.ClientAuthentication
 import net.openid.appauth.TokenRequest
+import net.openid.appauth.TokenResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -126,9 +127,12 @@ class MainActivity : AppCompatActivity() {
     private fun getTokenClient() {
         val service = RetrofitClient.retrofitInstance.create(APICallToken::class.java)
         val callToken = service.getToken()
-        callToken.enqueue(object : Callback<TokenResponse> {
+        callToken.enqueue(object : Callback<TokenClientResponse> {
             @SuppressLint("CommitPrefEdits")
-            override fun onResponse(call: Call<TokenResponse>, response: Response<TokenResponse>) {
+            override fun onResponse(
+                call: Call<TokenClientResponse>,
+                response: Response<TokenClientResponse>
+            ) {
                 if (response.isSuccessful) {
                     val token = response.body()?.token
                     /*Log.d("token", token.toString())*/
@@ -138,7 +142,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onFailure(call: Call<TokenResponse>, t: Throwable) {
+            override fun onFailure(call: Call<TokenClientResponse>, t: Throwable) {
                 Log.d("token", t.message.toString())
             }
         })
@@ -147,20 +151,18 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         inits()
+        initViews()
         getTokenClient()
-        if (mStateManager.getCurrent().isAuthorized) {
-            getTokenAuth()
-        }
-
+        getTokenAuth()
     }
 
     private fun getTokenAuth() {
         val state: AuthState = mStateManager.getCurrent()
 
-        val expiresAt : Long? = state.accessTokenExpirationTime
-        if (expiresAt == null){
-            Log.d("TokenAuth","Không có thời hạn token")
-        }else if(expiresAt < System.currentTimeMillis()){
+        val expiresAt: Long? = state.accessTokenExpirationTime
+        if (expiresAt == null) {
+            Log.d("TokenAuth", "Không có thời hạn token")
+        } else if (expiresAt < System.currentTimeMillis()) {
             refreshAccessToken()
         }
         val token = state.accessToken
@@ -186,7 +188,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleAccessTokenResponse(
-        tokenResponse: net.openid.appauth.TokenResponse?,
+        tokenResponse: TokenResponse?,
         authException: AuthorizationException?
     ) {
         mStateManager.updateAfterTokenResponse(tokenResponse!!, authException)
@@ -202,7 +204,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleCodeExchangeResponse(
-        tokenResponse: net.openid.appauth.TokenResponse?,
+        tokenResponse:  TokenResponse?,
         authException: AuthorizationException?
     ) {
         mStateManager.updateAfterTokenResponse(tokenResponse!!, authException)

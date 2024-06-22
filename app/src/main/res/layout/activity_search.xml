@@ -46,10 +46,9 @@
                     android:layout_height="30dp"
                     android:layout_marginStart="10dp"
                     android:background="@android:color/transparent"
-                    android:focusable="false"
                     android:hint="Tìm kiếm bài hát, nghệ sĩ.."
                     android:selectAllOnFocus="false"
-                    android:textColor="@color/white"
+                    android:textColor="@color/black"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/imv"
@@ -71,7 +70,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
+        <!--    <TextView
                 android:id="@+id/textView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -80,7 +79,7 @@
                 android:text="Đề xuất cho bạn"
                 android:textColor="@color/black"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold" />-->
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraintLayout5"
@@ -95,14 +94,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_margin="10dp"
+                    android:scrollbars="none"
+                    android:overScrollMode="never"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/searchTrack"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_margin="10dp"
+                    android:layout_marginVertical="5dp"
+                    android:layout_marginHorizontal="10dp"
+                    android:scrollbars="none"
+                    android:overScrollMode="never"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/searchArtists" />

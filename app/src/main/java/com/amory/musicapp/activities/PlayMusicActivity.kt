@@ -8,12 +8,14 @@ import android.os.Handler
 import android.util.Log
 import android.view.animation.LinearInterpolator
 import android.widget.SeekBar
+import androidx.activity.viewModels
 import com.amory.musicapp.R
 import com.amory.musicapp.databinding.ActivityPlayMusicBinding
 import com.amory.musicapp.model.AudioResponse
 import com.amory.musicapp.model.Track
 import com.amory.musicapp.retrofit.APICallAudio
 import com.amory.musicapp.retrofit.RetrofitClient
+import com.amory.musicapp.viewModel.SharedViewModel
 import com.bumptech.glide.Glide
 import retrofit2.Call
 import retrofit2.Callback
@@ -22,21 +24,35 @@ import java.util.concurrent.TimeUnit
 
 class PlayMusicActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayMusicBinding
-    private lateinit var track: Track
+    lateinit var track: Track
     private var handler: Handler = Handler()
     private lateinit var runnable: Runnable
     private lateinit var mediaPlayer: MediaPlayer
+
+    private val sharedViewModel: SharedViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayMusicBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initView()
+        onClickBack()
+    }
+
+    private fun onClickBack() {
+        binding.imvBack.setOnClickListener {
+            onBackPressed()
+        }
+    }
+
+    private fun getTrack() {
+        track = intent.getSerializableExtra("track") as Track
+        Log.d("track", track.toString())
     }
 
     private fun initView() {
-        track = intent.getSerializableExtra("track") as Track
-        Log.d("track", track.toString())
+        getTrack()
+        sharedViewModel.setTrack(track)
         for (i in 0 until track.artists.size) {
             binding.nameArtistTXT.text = track.artists[i].name
         }
@@ -46,7 +62,7 @@ class PlayMusicActivity : AppCompatActivity() {
         getUriAudio()
     }
 
-    private fun playTrack(uriAudio:String) {
+    private fun playTrack(uriAudio: String) {
         val audioUri = Uri.parse(uriAudio)
         mediaPlayer = MediaPlayer().apply {
             setDataSource(this@PlayMusicActivity, audioUri)
@@ -59,6 +75,9 @@ class PlayMusicActivity : AppCompatActivity() {
             }
             prepareAsync()
         }
+
+        sharedViewModel.setMediaPlayer(mediaPlayer)
+
         binding.playImv.setOnClickListener {
             if (!mediaPlayer.isPlaying) {
                 mediaPlayer.start()
@@ -95,6 +114,7 @@ class PlayMusicActivity : AppCompatActivity() {
             binding.seekBar.progress = 0
             binding.startDurationTXT.text = formatTime(0)
         }
+
     }
 
     private fun getUriAudio() {
@@ -140,7 +160,8 @@ class PlayMusicActivity : AppCompatActivity() {
         if (::mediaPlayer.isInitialized) {
             mediaPlayer.release()
         }
-        handler.removeCallbacks(runnable)
+        if (::runnable.isInitialized) {
+            handler.removeCallbacks(runnable)
+        }
     }
-
 }

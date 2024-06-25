@@ -27,25 +27,25 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class HomeFragment : Fragment() {
-    private var _binding: FragmentHomeBinding ?= null
+    private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-    private var itemTrack : MutableList<Track> ?= null
-    private var itemArtists : MutableList<Artists> ?= null
+    private var itemTrack: MutableList<Track>? = null
+    private var itemArtists: MutableList<Artists>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentHomeBinding.inflate(inflater,container,false)
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initViews()
+        init()
     }
 
-    private fun initViews() {
+    private fun init() {
         binding.searchET.requestFocus()
         getPopularTracks()
         getPopularArtist()
@@ -62,38 +62,29 @@ class HomeFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        getPopularArtist()
-        getPopularTracks()
+        if (itemTrack != null && itemArtists != null){
+            setRecyclerViewPopularTracks()
+            setRecyclerViewPopularArtists()
+        }else{
+            getPopularArtist()
+            getPopularTracks()
+        }
     }
-
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
     }
-    private fun getPopularTracks(){
-        val service = RetrofitClient.retrofitInstance.create(APICallCatalog::class.java)
-        val callPopularTrack = service.getPopularTrack(1,5)
-        callPopularTrack.enqueue(object : Callback<TrackResponse>{
-            override fun onResponse(call: Call<TrackResponse>, response: Response<TrackResponse>) {
-                if (response.isSuccessful){
-                    itemTrack = response.body()?.items
-                    Log.d("trackPopular",response.body()?.items.toString())
-                    if (_binding != null) {
-                        val adapter = PopularTrackAdapter(itemTrack!!, object : OnCLickTrack {
-                            override fun onCLickTrack(position: Int) {
-                                val intent = Intent(requireContext(), PlayMusicActivity::class.java)
-                                intent.putExtra("track", itemTrack!![position])
-                                startActivity(intent)
-                            }
-                        })
 
-                        binding.popularTracks.adapter = adapter
-                        binding.popularTracks.layoutManager = LinearLayoutManager(
-                            requireContext(),
-                            LinearLayoutManager.VERTICAL,
-                            false
-                        )
-                        binding.popularTracks.setHasFixedSize(true)
+    private fun getPopularTracks() {
+        val service = RetrofitClient.retrofitInstance.create(APICallCatalog::class.java)
+        val callPopularTrack = service.getPopularTrack(1, 5)
+        callPopularTrack.enqueue(object : Callback<TrackResponse> {
+            override fun onResponse(call: Call<TrackResponse>, response: Response<TrackResponse>) {
+                if (response.isSuccessful) {
+                    itemTrack = response.body()?.items
+                    Log.d("trackPopular", response.body()?.items.toString())
+                    if (_binding != null) {
+                        setRecyclerViewPopularTracks()
                     }
                 }
             }
@@ -102,40 +93,38 @@ class HomeFragment : Fragment() {
             }
         })
     }
-    private fun getPopularArtist(){
+
+    private fun setRecyclerViewPopularTracks() {
+        val adapter = PopularTrackAdapter(itemTrack!!, object : OnCLickTrack {
+            override fun onCLickTrack(position: Int) {
+                val intent = Intent(requireContext(), PlayMusicActivity::class.java)
+                intent.putExtra("track", itemTrack!![position])
+                startActivity(intent)
+            }
+        })
+
+        binding.popularTracks.adapter = adapter
+        binding.popularTracks.layoutManager = LinearLayoutManager(
+            requireContext(),
+            LinearLayoutManager.VERTICAL,
+            false
+        )
+        binding.popularTracks.setHasFixedSize(true)
+    }
+
+    private fun getPopularArtist() {
         val service = RetrofitClient.retrofitInstance.create(APICallCatalog::class.java)
-        val callPopularArtist = service.getPopularArtists(1,5)
-        callPopularArtist.enqueue(object : Callback<ArtistResponse>{
+        val callPopularArtist = service.getPopularArtists(1, 5)
+        callPopularArtist.enqueue(object : Callback<ArtistResponse> {
             override fun onResponse(
                 call: Call<ArtistResponse>,
                 response: Response<ArtistResponse>
             ) {
-                if (response.isSuccessful){
+                if (response.isSuccessful) {
                     itemArtists = response.body()?.items
-                    Log.d("trackArtist",response.body()?.items.toString())
+                    Log.d("trackArtist", response.body()?.items.toString())
                     if (_binding != null) {
-                        val adapter = PopularArtistsAdapter(itemArtists!!, object : OnCLickArtist {
-                            override fun onCLickArtist(position: Int) {
-                                val selectedArtist = itemArtists!![position]
-                                val fragment = DetailArtistFragment()
-
-                                val bundle = Bundle()
-                                bundle.putSerializable("selectedArtist", selectedArtist)
-                                fragment.arguments = bundle
-
-                                requireActivity().supportFragmentManager.beginTransaction()
-                                    .replace(R.id.fragment_container, fragment)
-                                    .addToBackStack(null)
-                                    .commit()
-                            }
-                        })
-                        binding.rvPopularArtists.adapter = adapter
-                        binding.rvPopularArtists.layoutManager = LinearLayoutManager(
-                            requireContext(),
-                            LinearLayoutManager.HORIZONTAL,
-                            false
-                        )
-                        binding.rvPopularArtists.setHasFixedSize(true)
+                        setRecyclerViewPopularArtists()
                     }
                 }
             }
@@ -143,6 +132,39 @@ class HomeFragment : Fragment() {
             override fun onFailure(call: Call<ArtistResponse>, t: Throwable) {
             }
         })
+    }
+
+    private fun setRecyclerViewPopularArtists() {
+        val adapter = PopularArtistsAdapter(itemArtists!!, object : OnCLickArtist {
+            override fun onCLickArtist(position: Int) {
+                val selectedArtist = itemArtists!![position]
+                val fragment = DetailArtistFragment()
+
+                val bundle = Bundle()
+                bundle.putSerializable("selectedArtist", selectedArtist)
+                fragment.arguments = bundle
+
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit()
+            }
+        })
+        binding.rvPopularArtists.adapter = adapter
+        binding.rvPopularArtists.layoutManager = LinearLayoutManager(
+            requireContext(),
+            LinearLayoutManager.HORIZONTAL,
+            false
+        )
+        binding.rvPopularArtists.setHasFixedSize(true)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (itemArtists != null && itemTrack != null) {
+            setRecyclerViewPopularTracks()
+            setRecyclerViewPopularArtists()
+        }
     }
 
 }

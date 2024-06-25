@@ -16,11 +16,13 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
+            android:id="@+id/imvBack"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="center"
             android:layout_marginStart="10dp"
-            android:background="@drawable/ic_back" />
+            android:background="@drawable/ic_back"
+            tools:ignore="ContentDescription" />
     </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout

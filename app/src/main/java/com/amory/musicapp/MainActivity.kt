@@ -1,12 +1,15 @@
 package com.amory.musicapp
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import com.amory.musicapp.config.AuthStateManager
 import com.amory.musicapp.config.Configuration
@@ -42,7 +45,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        inits()
+        init()
         setContentView(binding.root)
         sharedPreferences = this.getSharedPreferences("SAVE_TOKEN", Context.MODE_PRIVATE)
         RetrofitClient.init(this)
@@ -74,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun inits() {
+    private fun init() {
         mStateManager = AuthStateManager.getInstance(this)
         mExecutor = Executors.newSingleThreadExecutor()
         mConfiguration = Configuration.getInstance(this)
@@ -150,8 +153,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        inits()
-        initViews()
         getTokenClient()
         getTokenAuth()
     }
@@ -204,7 +205,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleCodeExchangeResponse(
-        tokenResponse:  TokenResponse?,
+        tokenResponse: TokenResponse?,
         authException: AuthorizationException?
     ) {
         mStateManager.updateAfterTokenResponse(tokenResponse!!, authException)
@@ -212,6 +213,5 @@ class MainActivity : AppCompatActivity() {
             runOnUiThread { getTokenAuth() }
         }
     }
-
 
 }

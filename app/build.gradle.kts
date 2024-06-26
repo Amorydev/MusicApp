@@ -51,8 +51,8 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
     implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.test.ext:junit:1.2.0")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.0")
 
     //SpinKit(Custom progressBar)
     implementation("com.github.ybq:Android-SpinKit:1.4.0")
@@ -77,5 +77,8 @@ dependencies {
     //AppAuth
     implementation("net.openid:appauth:0.11.1")
     implementation ("com.squareup.okio:okio:3.6.0")
+
+    //For Notification
+    implementation("androidx.media:media:1.7.0")
 
 }

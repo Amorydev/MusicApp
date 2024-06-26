@@ -179,6 +179,7 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         val binder = service as MusicService.MyBinder
         musicService = binder.currentService()
+        musicService!!.showNotification()
         getUriAudio()
     }
 

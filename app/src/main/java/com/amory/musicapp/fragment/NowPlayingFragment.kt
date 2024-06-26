@@ -6,17 +6,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
+import com.amory.musicapp.R
+import com.amory.musicapp.activities.PlayMusicActivity
+import com.amory.musicapp.activities.PlayMusicActivity.Companion.track
 import com.amory.musicapp.databinding.FragmentNowPlayingBinding
-import com.amory.musicapp.viewModel.SharedViewModel
 import com.bumptech.glide.Glide
 
 class NowPlayingFragment : Fragment() {
     private var _binding: FragmentNowPlayingBinding? = null
     private val binding get() = _binding!!
-
-    private val sharedViewModel: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -24,29 +22,64 @@ class NowPlayingFragment : Fragment() {
     ): View {
         _binding = FragmentNowPlayingBinding.inflate(inflater, container, false)
         binding.root.visibility = View.INVISIBLE
+        binding.imvPlay.setOnClickListener {
+            if (PlayMusicActivity.isPlaying){
+                pauseMusic()
+            } else {
+                playMusic()
+            }
+        }
         return binding.root
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
+    }
+
+    private fun checkPlay() {
+        if (PlayMusicActivity.isPlaying){
+            binding.imvPlay.setImageResource(R.drawable.ic_pause_now)
+        } else {
+            binding.imvPlay.setImageResource(R.drawable.ic_play_now)
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        sharedViewModel.currentTrack.observe(viewLifecycleOwner) { track ->
-            Log.d("track", track.toString())
-            if (track != null) {
+        if (PlayMusicActivity.musicService != null){
+            binding.root.visibility = View.VISIBLE
+        }
+        if (PlayMusicActivity.track != null) {
+            binding.nameArtistTXT.text = PlayMusicActivity.track!!.artists.joinToString(", ") { it.name }
+            binding.songNameTXT.text = PlayMusicActivity.track!!.name
+            Glide.with(binding.root).load(PlayMusicActivity.track!!.thumbnail).into(binding.imvTrack)
+        }
+       checkPlay()
+    }
 
-                binding.nameArtistTXT.text = track.artists.joinToString(", ") { it.name }
-                binding.songNameTXT.text = track.name
-                Glide.with(binding.root).load(track.thumbnail).into(binding.imvTrack)
+    private fun playMusic(){
+        PlayMusicActivity.musicService?.mediaPlayer?.let { mediaPlayer ->
+            if (!mediaPlayer.isPlaying) {
+                try {
+                    mediaPlayer.start()
+                    binding.imvPlay.setImageResource(R.drawable.ic_pause_now)
+                } catch (e: IllegalStateException) {
+                    Log.d("Error playMusic", e.message.toString())
+                }
             }
         }
+    }
 
-        sharedViewModel.mediaPlayer.observe(viewLifecycleOwner) { mediaPlayer ->
-            if (mediaPlayer != null) {
-                binding.root.visibility = View.VISIBLE
+    private fun pauseMusic(){
+        PlayMusicActivity.musicService?.mediaPlayer?.let { mediaPlayer ->
+            if (mediaPlayer.isPlaying) {
+                try {
+                    mediaPlayer.pause()
+                    binding.imvPlay.setImageResource(R.drawable.ic_play_now)
+                } catch (e: IllegalStateException) {
+                    Log.d("Error playMusic", e.message.toString())
+                }
             }
         }
     }

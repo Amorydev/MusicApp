@@ -13,7 +13,7 @@ class ApplicationClass: Application() {
         const val CHANNEL_ID = "channel"
         const val PLAY = "play"
         const val NEXT = "next"
-        const val PAUSE = "pause"
+        const val PREVIOUS = "previous"
         const val EXIT = "exit"
     }
 

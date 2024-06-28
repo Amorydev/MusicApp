@@ -192,10 +192,17 @@ class MainActivity : AppCompatActivity() {
         tokenResponse: TokenResponse?,
         authException: AuthorizationException?
     ) {
-        mStateManager.updateAfterTokenResponse(tokenResponse!!, authException)
-
-        runOnUiThread { getTokenAuth() }
+        if (tokenResponse != null) {
+            mStateManager.updateAfterTokenResponse(tokenResponse, authException)
+            runOnUiThread { getTokenAuth() }
+        } else {
+            Log.e("AccessToken", "Token response is null", authException)
+            runOnUiThread {
+                Toast.makeText(this, "Access token refresh failed", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
+
 
     private fun exchangeAuthorizationCode(authenticationResponse: AuthorizationResponse) {
         performTokenRequest(
@@ -208,10 +215,18 @@ class MainActivity : AppCompatActivity() {
         tokenResponse: TokenResponse?,
         authException: AuthorizationException?
     ) {
-        mStateManager.updateAfterTokenResponse(tokenResponse!!, authException)
-        if (mStateManager.getCurrent().isAuthorized) {
-            runOnUiThread { getTokenAuth() }
+        if (tokenResponse != null) {
+            mStateManager.updateAfterTokenResponse(tokenResponse, authException)
+            if (mStateManager.getCurrent().isAuthorized) {
+                runOnUiThread { getTokenAuth() }
+            }
+        } else {
+            Log.e("TokenExchange", "Token response is null", authException)
+            runOnUiThread {
+                Toast.makeText(this, "Token exchange failed", Toast.LENGTH_SHORT).show()
+            }
         }
     }
+
 
 }

@@ -1,5 +1,6 @@
 package com.amory.musicapp.activities
 
+import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
@@ -26,7 +27,6 @@ import retrofit2.Response
 import java.util.concurrent.TimeUnit
 
 class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
-    private lateinit var binding: ActivityPlayMusicBinding
     private var handler: Handler = Handler()
     private lateinit var runnable: Runnable
 
@@ -34,6 +34,8 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         var musicService: MusicService? = null
         var track: Track? = null
         var isPlaying: Boolean = false
+        @SuppressLint("StaticFieldLeak")
+        lateinit var binding: ActivityPlayMusicBinding
     }
 
 
@@ -71,6 +73,13 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         binding.seekBar.progress = 0
     }
 
+    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+        val binder = service as MusicService.MyBinder
+        musicService = binder.currentService()
+        musicService!!.showNotification(R.drawable.ic_pause_now)
+        getUriAudio()
+    }
+
     private fun playTrack(uriAudio: String) {
         val audioUri = Uri.parse(uriAudio)
         musicService!!.mediaPlayer?.reset()
@@ -92,12 +101,14 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
                 binding.playImv.setImageResource(R.drawable.ic_play)
                 // Stop animation
                 onStopAnim()
+                musicService!!.showNotification(R.drawable.ic_play_now)
                 false
             } else {
                 musicService!!.mediaPlayer?.start()
                 binding.playImv.setImageResource(R.drawable.ic_pause)
                 // Start animation
                 onStartAnim()
+                musicService!!.showNotification(R.drawable.ic_pause_now)
                 true
             }
         }
@@ -174,13 +185,6 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         if (::runnable.isInitialized) {
             handler.removeCallbacks(runnable)
         }
-    }
-
-    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-        val binder = service as MusicService.MyBinder
-        musicService = binder.currentService()
-        musicService!!.showNotification()
-        getUriAudio()
     }
 
     override fun onServiceDisconnected(name: ComponentName?) {

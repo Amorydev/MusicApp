@@ -1,6 +1,7 @@
 package com.amory.musicapp.service
 
 import android.annotation.SuppressLint
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -28,7 +29,20 @@ class MusicService : Service() {
         }
     }
     @SuppressLint("ForegroundServiceType")
-    fun showNotification(){
+    fun showNotification(playBtn:Int){
+
+        val preIntent = Intent(baseContext, NotificationReceiver::class.java).setAction(ApplicationClass.PREVIOUS)
+        val prePendingIntent = PendingIntent.getBroadcast(baseContext,0,preIntent,PendingIntent.FLAG_UPDATE_CURRENT)
+
+        val nextIntent = Intent(baseContext, NotificationReceiver::class.java).setAction(ApplicationClass.NEXT)
+        val nextPendingIntent = PendingIntent.getBroadcast(baseContext,0,nextIntent,PendingIntent.FLAG_UPDATE_CURRENT)
+
+        val playIntent = Intent(baseContext, NotificationReceiver::class.java).setAction(ApplicationClass.PLAY)
+        val playPendingIntent = PendingIntent.getBroadcast(baseContext,0,playIntent,PendingIntent.FLAG_UPDATE_CURRENT)
+
+        val exitIntent = Intent(baseContext, NotificationReceiver::class.java).setAction(ApplicationClass.PREVIOUS)
+        val exitPendingIntent = PendingIntent.getBroadcast(baseContext,0,exitIntent,PendingIntent.FLAG_UPDATE_CURRENT)
+
         var artists = ""
         for (i in 0 until PlayMusicActivity.track!!.artists.size){
             artists = PlayMusicActivity.track!!.artists[i].name
@@ -36,16 +50,16 @@ class MusicService : Service() {
         val notification = NotificationCompat.Builder(baseContext,ApplicationClass.CHANNEL_ID)
             .setContentTitle(PlayMusicActivity.track?.name)
             .setContentText(artists)
-            .setSmallIcon(R.drawable.ic_home)
-            .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_logo))
+            .setSmallIcon(R.drawable.ic_logo)
+            .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.background_color_main))
             .setStyle(androidx.media.app.NotificationCompat.MediaStyle().setMediaSession(mediaSession.sessionToken))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setOnlyAlertOnce(true)
-            .addAction(R.drawable.ic_previous_music,"Previous",null)
-            .addAction(R.drawable.ic_play_now,"Play",null)
-            .addAction(R.drawable.ic_next_music,"Next",null)
-            .addAction(R.drawable.ic_exit,"Exit",null)
+            .addAction(R.drawable.ic_previous_music,"Previous",prePendingIntent)
+            .addAction(playBtn,"Play",playPendingIntent)
+            .addAction(R.drawable.ic_next_music,"Next",nextPendingIntent)
+            .addAction(R.drawable.ic_exit,"Exit",exitPendingIntent)
             .build()
         startForeground(13,notification)
     }

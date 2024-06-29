@@ -14,9 +14,8 @@ class PopularTrackAdapter(private val listTrack: MutableList<Track>, private val
         fun bind(data: Track) {
             binding.txtSongName.text = data.name
             binding.txtSongDuration.text = formatSecondsToMinutesAndSeconds(data.durationSec)
-            if (data.artists.isNotEmpty() && adapterPosition < data.artists.size) {
-                binding.txtArtists.text = data.artists[adapterPosition].name
-            }
+            val artist = data.artists.joinToString(",") { it -> it.name }
+            binding.txtArtists.text = artist
             Glide.with(binding.root).load(data.thumbnail).into(binding.imvTrackImage)
         }
     }

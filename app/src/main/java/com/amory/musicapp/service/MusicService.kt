@@ -13,7 +13,6 @@ import android.support.v4.media.session.MediaSessionCompat
 import androidx.core.app.NotificationCompat
 import com.amory.musicapp.R
 import com.amory.musicapp.activities.PlayMusicActivity
-import com.amory.musicapp.activities.PlayMusicActivity.Companion.track
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -48,17 +47,18 @@ class MusicService : Service() {
         val exitIntent = Intent(baseContext, NotificationReceiver::class.java).setAction(ApplicationClass.EXIT)
         val exitPendingIntent = PendingIntent.getBroadcast(baseContext,0,exitIntent,PendingIntent.FLAG_UPDATE_CURRENT)
 
+        val track = PlayMusicActivity.listTrack!![PlayMusicActivity.positionTrack]
         var artists = ""
-        for (i in 0 until PlayMusicActivity.track!!.artists.size){
-            artists = PlayMusicActivity.track!!.artists[i].name
+        for (i in 0 until track.artists.size){
+            artists = track.artists[i].name
         }
         Glide.with(baseContext)
             .asBitmap()
-            .load(PlayMusicActivity.track?.thumbnail)
+            .load(track.thumbnail)
             .into(object : CustomTarget<Bitmap>(){
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                     val notification = NotificationCompat.Builder(baseContext,ApplicationClass.CHANNEL_ID)
-                        .setContentTitle(PlayMusicActivity.track?.name)
+                        .setContentTitle(track.name)
                         .setContentText(artists)
                         .setSmallIcon(R.drawable.ic_logo)
                         .setLargeIcon(resource)
@@ -78,5 +78,9 @@ class MusicService : Service() {
                 }
             })
 
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer?.release()
     }
 }

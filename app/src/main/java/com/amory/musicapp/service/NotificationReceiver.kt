@@ -6,6 +6,7 @@ import android.content.Intent
 import android.widget.Toast
 import com.amory.musicapp.R
 import com.amory.musicapp.activities.PlayMusicActivity
+import com.amory.musicapp.fragment.NowPlayingFragment
 import kotlin.system.exitProcess
 
 class NotificationReceiver:BroadcastReceiver() {
@@ -37,11 +38,14 @@ class NotificationReceiver:BroadcastReceiver() {
         PlayMusicActivity.musicService!!.mediaPlayer!!.start()
         PlayMusicActivity.musicService!!.showNotification(R.drawable.ic_pause_now)
         PlayMusicActivity.binding.playImv.setImageResource(R.drawable.ic_pause)
+        NowPlayingFragment.binding.imvPlay.setImageResource(R.drawable.ic_pause_now)
     }
     private fun pauseMusic(){
         PlayMusicActivity.isPlayingMusic = false
         PlayMusicActivity.musicService!!.mediaPlayer!!.pause()
         PlayMusicActivity.musicService!!.showNotification(R.drawable.ic_play_now)
         PlayMusicActivity.binding.playImv.setImageResource(R.drawable.ic_play)
+        NowPlayingFragment.binding.imvPlay.setImageResource(R.drawable.ic_play_now)
+
     }
 }

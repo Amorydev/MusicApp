@@ -20,8 +20,10 @@ import com.amory.musicapp.model.ArtistResponse
 import com.amory.musicapp.model.Artists
 import com.amory.musicapp.model.Track
 import com.amory.musicapp.model.TrackResponse
+import com.amory.musicapp.model.eventBus.EventPostListTrack
 import com.amory.musicapp.retrofit.APICallCatalog
 import com.amory.musicapp.retrofit.RetrofitClient
+import org.greenrobot.eventbus.EventBus
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -97,8 +99,9 @@ class HomeFragment : Fragment() {
     private fun setRecyclerViewPopularTracks() {
         val adapter = PopularTrackAdapter(itemTrack!!, object : OnCLickTrack {
             override fun onCLickTrack(position: Int) {
+                EventBus.getDefault().postSticky(EventPostListTrack(itemTrack!!))
                 val intent = Intent(requireContext(), PlayMusicActivity::class.java)
-                intent.putExtra("track", itemTrack!![position])
+                intent.putExtra("positionTrack", position)
                 startActivity(intent)
             }
         })

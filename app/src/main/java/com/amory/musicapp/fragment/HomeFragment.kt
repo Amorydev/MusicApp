@@ -164,6 +164,9 @@ class HomeFragment : Fragment() {
         if (itemArtists != null && itemTrack != null) {
             setRecyclerViewPopularTracks()
             setRecyclerViewPopularArtists()
+        }else{
+            getPopularArtist()
+            getPopularTracks()
         }
     }
 

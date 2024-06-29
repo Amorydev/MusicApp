@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.amory.musicapp.R
 import com.amory.musicapp.activities.PlayMusicActivity
-import com.amory.musicapp.activities.PlayMusicActivity.Companion.track
 import com.amory.musicapp.databinding.FragmentNowPlayingBinding
 import com.bumptech.glide.Glide
 
@@ -23,7 +22,7 @@ class NowPlayingFragment : Fragment() {
         _binding = FragmentNowPlayingBinding.inflate(inflater, container, false)
         binding.root.visibility = View.INVISIBLE
         binding.imvPlay.setOnClickListener {
-            if (PlayMusicActivity.isPlaying){
+            if (PlayMusicActivity.isPlayingMusic){
                 pauseMusic()
             } else {
                 playMusic()
@@ -38,7 +37,7 @@ class NowPlayingFragment : Fragment() {
     }
 
     private fun checkPlay() {
-        if (PlayMusicActivity.isPlaying){
+        if (PlayMusicActivity.isPlayingMusic){
             binding.imvPlay.setImageResource(R.drawable.ic_pause_now)
         } else {
             binding.imvPlay.setImageResource(R.drawable.ic_play_now)

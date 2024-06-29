@@ -228,5 +228,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        RetrofitClient.init(this)
+        getTokenClient()
+        getTokenClient()
+    }
 
 }

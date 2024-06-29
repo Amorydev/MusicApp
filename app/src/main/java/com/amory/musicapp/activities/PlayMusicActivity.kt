@@ -6,13 +6,14 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.media.MediaPlayer
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import android.view.animation.LinearInterpolator
 import android.widget.SeekBar
+import androidx.appcompat.app.AppCompatActivity
 import com.amory.musicapp.R
 import com.amory.musicapp.databinding.ActivityPlayMusicBinding
 import com.amory.musicapp.model.AudioResponse
@@ -24,20 +25,21 @@ import com.bumptech.glide.Glide
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
-    private var handler: Handler = Handler()
+    private val handler = Handler(Looper.getMainLooper())
     private lateinit var runnable: Runnable
 
     companion object {
         var musicService: MusicService? = null
         var track: Track? = null
-        var isPlaying: Boolean = false
+        var isPlayingMusic: Boolean = false
+
         @SuppressLint("StaticFieldLeak")
         lateinit var binding: ActivityPlayMusicBinding
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,69 +55,70 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
     }
 
     private fun onClickBack() {
-        binding.imvBack.setOnClickListener {
+        binding.backBtn.setOnClickListener {
             onBackPressed()
         }
     }
 
     private fun getTrack() {
-        track = intent.getSerializableExtra("track") as Track
+        track = intent.getSerializableExtra("track") as Track?
         Log.d("track", track.toString())
     }
 
     private fun initView() {
         getTrack()
-        for (i in 0 until track!!.artists.size) {
-            binding.nameArtistTXT.text = track!!.artists[i].name
+        track?.let {
+            binding.nameArtistTXT.text = it.artists.joinToString(", ") { artist -> artist.name }
+            binding.songNameTXT.text = it.name
+            Glide.with(binding.root).load(it.thumbnail).into(binding.imvTrack)
+            binding.seekBar.progress = 0
         }
-        binding.songNameTXT.text = track!!.name
-        Glide.with(binding.root).load(track!!.thumbnail).into(binding.imvTrack)
-        binding.seekBar.progress = 0
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         val binder = service as MusicService.MyBinder
         musicService = binder.currentService()
-        musicService!!.showNotification(R.drawable.ic_pause_now)
-        getUriAudio()
+
+        // Load notification icon asynchronously
+        Executors.newSingleThreadExecutor().execute {
+            musicService?.showNotification(R.drawable.ic_pause_now)
+            runOnUiThread {
+                getUriAudio()
+            }
+        }
     }
 
     private fun playTrack(uriAudio: String) {
         val audioUri = Uri.parse(uriAudio)
-        musicService!!.mediaPlayer?.reset()
-        musicService!!.mediaPlayer = MediaPlayer().apply {
-            setDataSource(this@PlayMusicActivity, audioUri)
-            setOnPreparedListener {
-                binding.playImv.setImageResource(R.drawable.ic_pause)
-                start()
-                onStartAnim()
-                binding.endDurationTXT.text = formatTime(duration.toLong())
-                binding.seekBar.max = duration
+        try {
+            musicService?.mediaPlayer = MediaPlayer().apply {
+                reset()
+                setDataSource(this@PlayMusicActivity, audioUri)
+                setOnPreparedListener {
+                    isPlayingMusic = true
+                    binding.playImv.setImageResource(R.drawable.ic_pause)
+                    start()
+                    onStartAnim()
+                    binding.endDurationTXT.text = formatTime(duration.toLong())
+                    binding.seekBar.max = duration
+                }
+                prepareAsync()
             }
-            prepareAsync()
+        } catch (ex: Exception) {
+            return
         }
 
         binding.playImv.setOnClickListener {
-            isPlaying = if (musicService!!.mediaPlayer?.isPlaying!!) {
-                musicService!!.mediaPlayer?.pause()
-                binding.playImv.setImageResource(R.drawable.ic_play)
-                // Stop animation
-                onStopAnim()
-                musicService!!.showNotification(R.drawable.ic_play_now)
-                false
+            if (isPlayingMusic) {
+                pauseMusic()
             } else {
-                musicService!!.mediaPlayer?.start()
-                binding.playImv.setImageResource(R.drawable.ic_pause)
-                // Start animation
-                onStartAnim()
-                musicService!!.showNotification(R.drawable.ic_pause_now)
-                true
+                playMusic()
             }
         }
         binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
-                    musicService!!.mediaPlayer?.seekTo(progress)
+                    musicService?.mediaPlayer?.seekTo(progress)
                 }
             }
 
@@ -124,36 +127,64 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         })
         // Update seekbar and duration
         runnable = Runnable {
-            binding.seekBar.progress = musicService!!.mediaPlayer?.currentPosition!!
-            binding.startDurationTXT.text =
-                formatTime(musicService!!.mediaPlayer?.currentPosition!!.toLong())
+            musicService?.mediaPlayer?.let {
+                binding.seekBar.progress = it.currentPosition
+                binding.startDurationTXT.text = formatTime(it.currentPosition.toLong())
+            }
             handler.postDelayed(runnable, 1000)
         }
         handler.postDelayed(runnable, 1000)
         // reset button
-        musicService!!.mediaPlayer?.setOnCompletionListener {
+        musicService?.mediaPlayer?.setOnCompletionListener {
             binding.playImv.setImageResource(R.drawable.ic_play)
             binding.seekBar.progress = 0
             binding.startDurationTXT.text = formatTime(0)
-            isPlaying = false
+            isPlayingMusic = false
         }
+    }
+
+    private fun pauseMusic() {
+        musicService?.mediaPlayer?.pause()
+        binding.playImv.setImageResource(R.drawable.ic_play)
+        // Stop animation
+        onStopAnim()
+        musicService?.showNotification(R.drawable.ic_play_now)
+        isPlayingMusic = false
+    }
+
+    private fun playMusic() {
+        musicService?.mediaPlayer?.start()
+        binding.playImv.setImageResource(R.drawable.ic_pause)
+        // Start animation
+        musicService?.mediaPlayer?.let {
+            if (it.isPlaying) {
+                onStartAnim()
+            }
+        }
+        musicService?.showNotification(R.drawable.ic_pause_now)
+        isPlayingMusic = true
     }
 
     private fun getUriAudio() {
         val service = RetrofitClient.retrofitInstance.create(APICallAudio::class.java)
         val audioIds = track?.audioFileIds?.joinToString(separator = ",")
-        val callAudio = service.getAudioById(audioIds!!)
-        callAudio.enqueue(object : Callback<AudioResponse> {
-            override fun onResponse(call: Call<AudioResponse>, response: Response<AudioResponse>) {
-                if (response.isSuccessful) {
-                    val uriAudio = response.body()?.uris!![0]
-                    Log.d("audioFile", uriAudio.toString())
-                    playTrack(uriAudio)
+        audioIds?.let {
+            val callAudio = service.getAudioById(it)
+            callAudio.enqueue(object : Callback<AudioResponse> {
+                override fun onResponse(
+                    call: Call<AudioResponse>,
+                    response: Response<AudioResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        val uriAudio = response.body()?.uris?.get(0)
+                        Log.d("audioFile", uriAudio.toString())
+                        uriAudio?.let { it1 -> playTrack(it1) }
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<AudioResponse>, t: Throwable) {}
-        })
+                override fun onFailure(call: Call<AudioResponse>, t: Throwable) {}
+            })
+        }
     }
 
     private fun onStartAnim() {
@@ -179,12 +210,11 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (musicService != null && musicService!!.mediaPlayer != null) {
-            musicService!!.mediaPlayer?.release()
-        }
+        musicService?.mediaPlayer?.release()
         if (::runnable.isInitialized) {
             handler.removeCallbacks(runnable)
         }
+        unbindService(this)
     }
 
     override fun onServiceDisconnected(name: ComponentName?) {

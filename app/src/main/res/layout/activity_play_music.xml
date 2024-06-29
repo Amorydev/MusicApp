@@ -10,13 +10,13 @@
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="60dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/imvBack"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/backBtn"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="center"
@@ -127,53 +127,53 @@
             android:layout_height="50dp"
             android:src="@drawable/ic_play"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/nextImv"
-            app:layout_constraintStart_toEndOf="@+id/previousImv"
+            app:layout_constraintEnd_toStartOf="@+id/nextBtn"
+            app:layout_constraintStart_toEndOf="@+id/previousBtn"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription"
             />
 
-        <ImageView
-            android:id="@+id/nextImv"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/nextBtn"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:background="@drawable/ic_next_music"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/shuffleImv"
+            app:layout_constraintEnd_toStartOf="@+id/shuffleBtn"
             app:layout_constraintStart_toEndOf="@+id/playImv"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription" />
 
-        <ImageView
-            android:id="@+id/previousImv"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/previousBtn"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:background="@drawable/ic_previous_music"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/playImv"
-            app:layout_constraintStart_toEndOf="@+id/repeatImv"
+            app:layout_constraintStart_toEndOf="@+id/repeatBtn"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription" />
 
-        <ImageView
-            android:id="@+id/repeatImv"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/repeatBtn"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:background="@drawable/ic_repeat"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/previousImv"
+            app:layout_constraintEnd_toStartOf="@+id/previousBtn"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription" />
 
-        <ImageView
-            android:id="@+id/shuffleImv"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/shuffleBtn"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:background="@drawable/ic_shuffle"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/nextImv"
+            app:layout_constraintStart_toEndOf="@+id/nextBtn"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription" />
     </androidx.constraintlayout.widget.ConstraintLayout>

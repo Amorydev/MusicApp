@@ -12,7 +12,7 @@ class NotificationReceiver:BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         when(intent?.action){
             ApplicationClass.PLAY -> {
-                if (PlayMusicActivity.isPlaying){
+                if (PlayMusicActivity.isPlayingMusic){
                     pauseMusic()
                 }else{
                     playMusic()
@@ -33,14 +33,14 @@ class NotificationReceiver:BroadcastReceiver() {
     }
 
     private fun playMusic(){
-        PlayMusicActivity.isPlaying = true
+        PlayMusicActivity.isPlayingMusic = true
         PlayMusicActivity.musicService!!.mediaPlayer!!.start()
         PlayMusicActivity.musicService!!.showNotification(R.drawable.ic_pause_now)
         PlayMusicActivity.binding.playImv.setImageResource(R.drawable.ic_pause)
     }
     private fun pauseMusic(){
-        PlayMusicActivity.isPlaying = false
-        PlayMusicActivity.musicService!!.mediaPlayer!!.stop()
+        PlayMusicActivity.isPlayingMusic = false
+        PlayMusicActivity.musicService!!.mediaPlayer!!.pause()
         PlayMusicActivity.musicService!!.showNotification(R.drawable.ic_play_now)
         PlayMusicActivity.binding.playImv.setImageResource(R.drawable.ic_play)
     }

@@ -39,22 +39,25 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         var listTrack: MutableList<Track>? = null
         var positionTrack: Int = 0
         var isPlayingMusic: Boolean = false
+        var repeat: Boolean = false
 
         @SuppressLint("StaticFieldLeak")
         lateinit var binding: ActivityPlayMusicBinding
 
         fun setSongPosition(increment: Boolean) {
-            if (increment) {
-                if (listTrack!!.size - 1 == positionTrack) {
-                    positionTrack = 0
+            if (!repeat){
+                if (increment) {
+                    if (listTrack!!.size - 1 == positionTrack) {
+                        positionTrack = 0
+                    } else {
+                        ++positionTrack
+                    }
                 } else {
-                    ++positionTrack
-                }
-            } else {
-                if (0 == positionTrack) {
-                    positionTrack = listTrack!!.size - 1
-                } else {
-                    --positionTrack
+                    if (0 == positionTrack) {
+                        positionTrack = listTrack!!.size - 1
+                    } else {
+                        --positionTrack
+                    }
                 }
             }
         }
@@ -75,12 +78,27 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         onClickBack()
         onClickShuffle()
         shuffleTracks()
+        onClickRepeat()
 
         binding.nextBtn.setOnClickListener {
             nextOrPreviousMusic(increment = false)
         }
         binding.previousBtn.setOnClickListener {
             nextOrPreviousMusic(increment = true)
+        }
+    }
+
+    private fun onClickRepeat() {
+        binding.repeatBtn.setOnClickListener {
+            if (!repeat) {
+                repeat = true
+                binding.repeatBtn.backgroundTintList =
+                    ColorStateList.valueOf(ContextCompat.getColor(this, R.color.primary))
+            } else {
+                repeat = false
+                binding.repeatBtn.backgroundTintList =
+                    ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white))
+            }
         }
     }
 
@@ -124,6 +142,13 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
             }
         } ?: run {
             Log.e("PlayMusicActivity", "listTrack is null")
+        }
+        if (repeat) {
+            binding.repeatBtn.backgroundTintList =
+                ColorStateList.valueOf(ContextCompat.getColor(this, R.color.primary))
+        } else {
+            binding.repeatBtn.backgroundTintList =
+                ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white))
         }
     }
 

@@ -3,7 +3,6 @@ package com.amory.musicapp.service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import com.amory.musicapp.R
 import com.amory.musicapp.activities.PlayMusicActivity
 import com.amory.musicapp.fragment.NowPlayingFragment

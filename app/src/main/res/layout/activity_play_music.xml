@@ -159,7 +159,7 @@
             android:id="@+id/repeatBtn"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:background="@drawable/ic_repeat"
+            android:background="@drawable/ic_repeate"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/previousBtn"
             app:layout_constraintStart_toStartOf="parent"

@@ -7,15 +7,18 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Binder
 import android.os.IBinder
 import android.support.v4.media.session.MediaSessionCompat
+import android.view.animation.LinearInterpolator
 import androidx.core.app.NotificationCompat
 import com.amory.musicapp.R
 import com.amory.musicapp.activities.PlayMusicActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import java.util.concurrent.TimeUnit
 
 class MusicService : Service() {
     private var myBinder = MyBinder()
@@ -79,6 +82,7 @@ class MusicService : Service() {
             })
 
     }
+
     override fun onDestroy() {
         super.onDestroy()
         mediaPlayer?.release()

@@ -5,7 +5,6 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.res.ColorStateList
-import android.graphics.Typeface
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
@@ -19,27 +18,21 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.amory.musicapp.R
 import com.amory.musicapp.databinding.ActivityPlayMusicBinding
-import com.amory.musicapp.model.AudioResponse
+import com.amory.musicapp.managers.UriAudioManger
 import com.amory.musicapp.model.Track
 import com.amory.musicapp.model.eventBus.EventPostListTrack
-import com.amory.musicapp.retrofit.APICallAudio
-import com.amory.musicapp.retrofit.RetrofitClient
 import com.amory.musicapp.service.MusicService
 import com.bumptech.glide.Glide
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.util.Collections.shuffle
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var runnable: Runnable
-    private var shuffle:Boolean = false
+    private var shuffle: Boolean = false
 
     companion object {
         var musicService: MusicService? = null
@@ -49,6 +42,23 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
 
         @SuppressLint("StaticFieldLeak")
         lateinit var binding: ActivityPlayMusicBinding
+
+        fun setSongPosition(increment: Boolean) {
+            if (increment) {
+                if (listTrack!!.size - 1 == positionTrack) {
+                    positionTrack = 0
+                } else {
+                    ++positionTrack
+                }
+            } else {
+                if (0 == positionTrack) {
+                    positionTrack = listTrack!!.size - 1
+                } else {
+                    --positionTrack
+                }
+            }
+        }
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,7 +98,7 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
     }
 
     private fun shuffleTracks() {
-        if (shuffle){
+        if (shuffle) {
             listTrack!!.shuffle()
         }
     }
@@ -125,31 +135,14 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         Executors.newSingleThreadExecutor().execute {
             musicService?.showNotification(R.drawable.ic_pause_now)
             runOnUiThread {
-                getUriAudio()
+                getUriAudio(listTrack!![positionTrack])
             }
         }
     }
 
     private fun playTrack(uriAudio: String) {
         val audioUri = Uri.parse(uriAudio)
-        try {
-            musicService?.mediaPlayer = MediaPlayer().apply {
-                reset()
-                setDataSource(this@PlayMusicActivity, audioUri)
-                setOnPreparedListener {
-                    isPlayingMusic = true
-                    binding.playImv.setImageResource(R.drawable.ic_pause)
-                    start()
-                    onStartAnim()
-                    binding.endDurationTXT.text = formatTime(duration.toLong())
-                    binding.seekBar.max = duration
-                }
-                prepareAsync()
-            }
-        } catch (ex: Exception) {
-            return
-        }
-
+        createMediaPlayer(audioUri)
         binding.playImv.setOnClickListener {
             if (isPlayingMusic) {
                 pauseMusic()
@@ -185,35 +178,39 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         }
     }
 
+    private fun createMediaPlayer(uriAudio: Uri) {
+        try {
+            musicService?.mediaPlayer = MediaPlayer().apply {
+                reset()
+                setDataSource(this@PlayMusicActivity, uriAudio)
+                setOnPreparedListener {
+                    isPlayingMusic = true
+                    binding.playImv.setImageResource(R.drawable.ic_pause)
+                    start()
+                    onStartAnim()
+                    binding.endDurationTXT.text = formatTime(duration.toLong())
+                    binding.seekBar.max = duration
+                }
+                prepareAsync()
+            }
+        } catch (ex: Exception) {
+            return
+        }
+    }
+
     private fun nextOrPreviousMusic(increment: Boolean) {
         if (increment) {
             setSongPosition(increment = false)
             Log.d("position", positionTrack.toString())
             initView()
-            playMusic()
-            getUriAudio()
+            /*playMusic()*/
+            getUriAudio(listTrack!![positionTrack])
         } else {
             setSongPosition(increment = true)
             Log.d("position", positionTrack.toString())
             initView()
-            playMusic()
-            getUriAudio()
-        }
-    }
-
-    private fun setSongPosition(increment: Boolean) {
-        if (increment) {
-            if (listTrack!!.size - 1 == positionTrack) {
-                positionTrack = 0
-            } else {
-                ++positionTrack
-            }
-        } else {
-            if (0 == positionTrack) {
-                positionTrack = listTrack!!.size - 1
-            } else {
-                --positionTrack
-            }
+            /*playMusic()*/
+            getUriAudio(listTrack!![positionTrack])
         }
     }
 
@@ -227,7 +224,6 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
     }
 
     private fun playMusic() {
-        musicService?.mediaPlayer?.reset()
         musicService?.mediaPlayer?.start()
         binding.playImv.setImageResource(R.drawable.ic_pause)
         // Start animation
@@ -240,25 +236,9 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         isPlayingMusic = true
     }
 
-    private fun getUriAudio() {
-        val service = RetrofitClient.retrofitInstance.create(APICallAudio::class.java)
-        val audioIds = listTrack!![positionTrack].audioFileIds.joinToString(separator = ",")
-        audioIds.let {
-            val callAudio = service.getAudioById(it)
-            callAudio.enqueue(object : Callback<AudioResponse> {
-                override fun onResponse(
-                    call: Call<AudioResponse>,
-                    response: Response<AudioResponse>
-                ) {
-                    if (response.isSuccessful) {
-                        val uriAudio = response.body()?.uris?.get(0)
-                        Log.d("audioFile", uriAudio.toString())
-                        uriAudio?.let { it1 -> playTrack(it1) }
-                    }
-                }
-
-                override fun onFailure(call: Call<AudioResponse>, t: Throwable) {}
-            })
+    private fun getUriAudio(track: Track) {
+        UriAudioManger.getUriAudio(track) { uri ->
+            uri?.let { playTrack(it) }
         }
     }
 

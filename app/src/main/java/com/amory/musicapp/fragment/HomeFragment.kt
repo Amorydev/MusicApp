@@ -27,6 +27,7 @@ import org.greenrobot.eventbus.EventBus
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import kotlin.system.exitProcess
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -75,6 +76,12 @@ class HomeFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+        if (!PlayMusicActivity.isPlayingMusic && PlayMusicActivity.musicService != null){
+            PlayMusicActivity.musicService!!.stopForeground(true)
+            PlayMusicActivity.musicService!!.mediaPlayer!!.release()
+            PlayMusicActivity.musicService!!.mediaPlayer = null
+            exitProcess(1)
+        }
     }
 
     private fun getPopularTracks() {

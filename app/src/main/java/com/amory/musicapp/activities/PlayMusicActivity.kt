@@ -123,7 +123,7 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
 
     private fun onClickBack() {
         binding.backBtn.setOnClickListener {
-            onBackPressed()
+            finish()
         }
     }
 

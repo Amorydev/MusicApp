@@ -6,6 +6,7 @@ import android.content.Intent
 import com.amory.musicapp.R
 import com.amory.musicapp.activities.PlayMusicActivity
 import com.amory.musicapp.fragment.NowPlayingFragment
+import com.amory.musicapp.managers.PositionSongManger.setSongPosition
 import com.amory.musicapp.managers.UriAudioManger
 import com.amory.musicapp.model.Track
 import com.bumptech.glide.Glide
@@ -53,7 +54,7 @@ class NotificationReceiver:BroadcastReceiver() {
     }
 
     private fun nextOrPreviousMusic(increment: Boolean) {
-        PlayMusicActivity.setSongPosition(increment)
+        setSongPosition(increment)
         val listTracks = PlayMusicActivity.listTrack
         val positionTrack = PlayMusicActivity.positionTrack
         listTracks?.get(positionTrack)?.let {

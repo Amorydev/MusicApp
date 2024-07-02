@@ -5,6 +5,7 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.res.ColorStateList
+import android.icu.util.UniversalTimeScale.toLong
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
@@ -18,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.amory.musicapp.R
 import com.amory.musicapp.databinding.ActivityPlayMusicBinding
+import com.amory.musicapp.managers.PositionSongManger.setSongPosition
 import com.amory.musicapp.managers.UriAudioManger
 import com.amory.musicapp.model.Track
 import com.amory.musicapp.model.eventBus.EventPostListTrack
@@ -43,25 +45,6 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
 
         @SuppressLint("StaticFieldLeak")
         lateinit var binding: ActivityPlayMusicBinding
-
-        fun setSongPosition(increment: Boolean) {
-            if (!repeat){
-                if (increment) {
-                    if (listTrack!!.size - 1 == positionTrack) {
-                        positionTrack = 0
-                    } else {
-                        ++positionTrack
-                    }
-                } else {
-                    if (0 == positionTrack) {
-                        positionTrack = listTrack!!.size - 1
-                    } else {
-                        --positionTrack
-                    }
-                }
-            }
-        }
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -129,6 +112,28 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
 
     private fun getPositionTrack() {
         positionTrack = intent.getIntExtra("positionTrack", 0)
+        val currentPosition = intent.getIntExtra("currentPosition", 0)
+        when (intent.getStringExtra("class")) {
+            "NowPlaying" -> {
+                initView()
+                binding.startDurationTXT.text =
+                    formatTime(musicService!!.mediaPlayer!!.currentPosition.toLong())
+                binding.endDurationTXT.text =
+                    formatTime(musicService!!.mediaPlayer!!.duration.toLong())
+                binding.seekBar.progress = musicService!!.mediaPlayer!!.currentPosition
+                binding.seekBar.max = musicService!!.mediaPlayer!!.duration
+                musicService?.mediaPlayer?.seekTo(currentPosition)
+                setUpSeekBar()
+                if (isPlayingMusic) {
+                    binding.playImv.setImageResource(R.drawable.ic_pause_now)
+                    playMusic()
+                } else {
+                    binding.playImv.setImageResource(R.drawable.ic_play_now)
+                    pauseMusic()
+                }
+                onClickPlay()
+            }
+        }
     }
 
     private fun initView() {
@@ -167,7 +172,23 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
 
     private fun playTrack(uriAudio: String) {
         val audioUri = Uri.parse(uriAudio)
+        if (musicService?.mediaPlayer?.isPlaying == true && musicService?.mediaPlayer?.currentPosition != 0) {
+            // MediaPlayer đang phát, không cần reset
+            return
+        }
         createMediaPlayer(audioUri)
+        onClickPlay()
+        setUpSeekBar()
+        // reset button
+        musicService?.mediaPlayer?.setOnCompletionListener {
+            binding.playImv.setImageResource(R.drawable.ic_play)
+            binding.seekBar.progress = 0
+            binding.startDurationTXT.text = formatTime(0)
+            isPlayingMusic = false
+        }
+    }
+
+    private fun onClickPlay() {
         binding.playImv.setOnClickListener {
             if (isPlayingMusic) {
                 pauseMusic()
@@ -175,6 +196,9 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
                 playMusic()
             }
         }
+    }
+
+    private fun setUpSeekBar() {
         binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
@@ -194,13 +218,6 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
             handler.postDelayed(runnable, 1000)
         }
         handler.postDelayed(runnable, 1000)
-        // reset button
-        musicService?.mediaPlayer?.setOnCompletionListener {
-            binding.playImv.setImageResource(R.drawable.ic_play)
-            binding.seekBar.progress = 0
-            binding.startDurationTXT.text = formatTime(0)
-            isPlayingMusic = false
-        }
     }
 
     private fun createMediaPlayer(uriAudio: Uri) {

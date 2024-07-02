@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import com.amory.musicapp.activities.PlayMusicActivity
 import com.amory.musicapp.config.AuthStateManager
 import com.amory.musicapp.config.Configuration
 import com.amory.musicapp.databinding.ActivityMainBinding
@@ -33,6 +34,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -233,6 +235,16 @@ class MainActivity : AppCompatActivity() {
         RetrofitClient.init(this)
         getTokenClient()
         getTokenClient()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (!PlayMusicActivity.isPlayingMusic && PlayMusicActivity.musicService != null){
+            PlayMusicActivity.musicService!!.stopForeground(true)
+            PlayMusicActivity.musicService!!.mediaPlayer!!.release()
+            PlayMusicActivity.musicService!!.mediaPlayer = null
+            exitProcess(1)
+        }
     }
 
 }

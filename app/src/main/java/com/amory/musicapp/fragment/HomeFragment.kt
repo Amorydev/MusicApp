@@ -1,6 +1,7 @@
 package com.amory.musicapp.fragment
 
 import android.content.Intent
+import android.os.Build.VERSION_CODES.P
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -76,12 +77,6 @@ class HomeFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
-        if (!PlayMusicActivity.isPlayingMusic && PlayMusicActivity.musicService != null){
-            PlayMusicActivity.musicService!!.stopForeground(true)
-            PlayMusicActivity.musicService!!.mediaPlayer!!.release()
-            PlayMusicActivity.musicService!!.mediaPlayer = null
-            exitProcess(1)
-        }
     }
 
     private fun getPopularTracks() {

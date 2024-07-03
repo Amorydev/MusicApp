@@ -8,15 +8,12 @@ import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.amory.musicapp.Interface.OnCLickArtist
 import com.amory.musicapp.Interface.OnCLickTrack
-import com.amory.musicapp.R
-import com.amory.musicapp.adapter.PopularTrackAdapter
 import com.amory.musicapp.adapter.SearchArtistAdapter
 import com.amory.musicapp.adapter.SearchTrackAdapter
 import com.amory.musicapp.databinding.ActivitySearchBinding
+import com.amory.musicapp.managers.SearchManager
 import com.amory.musicapp.model.Artists
-import com.amory.musicapp.model.SearchArtistRequest
 import com.amory.musicapp.model.SearchResponse
-import com.amory.musicapp.model.SearchTrackRequest
 import com.amory.musicapp.model.Track
 import com.amory.musicapp.retrofit.APICallSearch
 import com.amory.musicapp.retrofit.RetrofitClient
@@ -25,9 +22,9 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class SearchActivity : AppCompatActivity() {
-    private lateinit var binding : ActivitySearchBinding
-    private lateinit var listArtist:MutableList<Artists>
-    private lateinit var listTrack:MutableList<Track>
+    private lateinit var binding: ActivitySearchBinding
+    private lateinit var listArtist: MutableList<Artists>
+    private lateinit var listTrack: MutableList<Track>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater)
@@ -38,15 +35,15 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun onSearch() {
-        binding.searchET.addTextChangedListener(object  : TextWatcher{
+        binding.searchET.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (s?.length == 0){
+                if (s?.length == 0) {
                     listArtist.clear()
                     listTrack.clear()
-                }else{
+                } else {
                     searchArtist(s.toString())
                     searchTrack(s.toString())
                 }
@@ -58,64 +55,38 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun searchArtist(search: String) {
-        val types : MutableList<String> = mutableListOf("artist")
-        val page = 1
-        val size = 3
-        val service = RetrofitClient.retrofitInstance.create(APICallSearch::class.java)
-        val callSearch = service.search(search,types,page,size)
-        callSearch.enqueue(object : Callback<SearchResponse>{
-            override fun onResponse(
-                call: Call<SearchResponse>,
-                response: Response<SearchResponse>
-            ) {
-                if (response.isSuccessful){
-                    val results = response.body()?.results
-                    listArtist = results!!.artist.items
-                    Log.d("list",listArtist.toString())
-                    val adapterArtists = SearchArtistAdapter(listArtist,object : OnCLickArtist{
-                        override fun onCLickArtist(position: Int) {
-
-                        }
-                    })
-                    binding.searchArtists.adapter = adapterArtists
-                    binding.searchArtists.layoutManager = LinearLayoutManager(this@SearchActivity,LinearLayoutManager.HORIZONTAL,false)
-                }
-            }
-
-            override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-                Log.d("Search", t.message.toString())
-            }
-        })
+        SearchManager.getArtistSearch(search) { artist ->
+            listArtist = artist!!
+            setupRecyclerViewArtistSearch()
+        }
     }
 
-    private fun searchTrack(search:String) {
-        val types : MutableList<String> = mutableListOf("track")
-        val page = 1
-        val size = 10
-        val service = RetrofitClient.retrofitInstance.create(APICallSearch::class.java)
-        val callSearch = service.search(search,types,page,size)
-        callSearch.enqueue(object : Callback<SearchResponse>{
-            override fun onResponse(
-                call: Call<SearchResponse>,
-                response: Response<SearchResponse>
-            ) {
-                if (response.isSuccessful){
-                    val results = response.body()?.results
-                    listTrack = results!!.track.items
-                    Log.d("list",listTrack.toString())
-                    val adapterArtists = SearchTrackAdapter(listTrack, object : OnCLickTrack{
-                        override fun onCLickTrack(position: Int) {
+    private fun setupRecyclerViewArtistSearch() {
+        val adapterArtists = SearchArtistAdapter(listArtist, object : OnCLickArtist {
+            override fun onCLickArtist(position: Int) {
 
-                        }
-                    })
-                    binding.searchTrack.adapter = adapterArtists
-                    binding.searchTrack.layoutManager = LinearLayoutManager(this@SearchActivity,LinearLayoutManager.VERTICAL,false)
-                }
-            }
-
-            override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-                Log.d("Search", t.message.toString())
             }
         })
+        binding.searchArtists.adapter = adapterArtists
+        binding.searchArtists.layoutManager =
+            LinearLayoutManager(this@SearchActivity, LinearLayoutManager.HORIZONTAL, false)
+    }
+
+    private fun searchTrack(search: String) {
+        SearchManager.getTrackSearch(search) { track ->
+            listTrack = track!!
+            setupRecyclerViewTrackSearch()
+        }
+    }
+
+    private fun setupRecyclerViewTrackSearch() {
+        val adapterArtists = SearchTrackAdapter(listTrack, object : OnCLickTrack {
+            override fun onCLickTrack(position: Int) {
+
+            }
+        })
+        binding.searchTrack.adapter = adapterArtists
+        binding.searchTrack.layoutManager =
+            LinearLayoutManager(this@SearchActivity, LinearLayoutManager.VERTICAL, false)
     }
 }

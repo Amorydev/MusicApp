@@ -7,7 +7,7 @@ import com.amory.musicapp.R
 import com.amory.musicapp.activities.PlayMusicActivity
 import com.amory.musicapp.fragment.NowPlayingFragment
 import com.amory.musicapp.managers.PositionSongManger.setSongPosition
-import com.amory.musicapp.managers.UriAudioManger
+import com.amory.musicapp.managers.AudioManger
 import com.amory.musicapp.model.Track
 import com.bumptech.glide.Glide
 import kotlin.system.exitProcess
@@ -58,7 +58,7 @@ class NotificationReceiver:BroadcastReceiver() {
         val listTracks = PlayMusicActivity.listTrack
         val positionTrack = PlayMusicActivity.positionTrack
         listTracks?.get(positionTrack)?.let {
-            UriAudioManger.getUriAudio(it) { uriAudio ->
+            AudioManger.getUriAudio(it) { uriAudio ->
                 uriAudio?.let { uri ->
                     PlayMusicActivity.musicService?.let { service ->
                         service.mediaPlayer?.apply {

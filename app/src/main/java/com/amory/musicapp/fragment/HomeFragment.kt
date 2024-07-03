@@ -14,21 +14,19 @@ import com.amory.musicapp.Interface.OnCLickTrack
 import com.amory.musicapp.R
 import com.amory.musicapp.activities.PlayMusicActivity
 import com.amory.musicapp.activities.SearchActivity
+import com.amory.musicapp.activities.SeeMoreTracksActivity
 import com.amory.musicapp.adapter.PopularArtistsAdapter
 import com.amory.musicapp.adapter.PopularTrackAdapter
 import com.amory.musicapp.databinding.FragmentHomeBinding
+import com.amory.musicapp.managers.ArtistManager
+import com.amory.musicapp.managers.TrackManager
 import com.amory.musicapp.model.ArtistResponse
 import com.amory.musicapp.model.Artists
 import com.amory.musicapp.model.Track
 import com.amory.musicapp.model.TrackResponse
 import com.amory.musicapp.model.eventBus.EventPostListTrack
-import com.amory.musicapp.retrofit.APICallCatalog
-import com.amory.musicapp.retrofit.RetrofitClient
 import org.greenrobot.eventbus.EventBus
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import kotlin.system.exitProcess
+
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -54,6 +52,14 @@ class HomeFragment : Fragment() {
         getPopularTracks()
         getPopularArtist()
         onCLickSearch()
+        onClickSeeMoreTracks()
+    }
+
+    private fun onClickSeeMoreTracks() {
+        binding.seeMoreTrackTxt.setOnClickListener {
+            val intent = Intent(requireContext(), SeeMoreTracksActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun onCLickSearch() {
@@ -66,36 +72,27 @@ class HomeFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        if (itemTrack != null && itemArtists != null){
+        if (itemTrack != null && itemArtists != null) {
             setRecyclerViewPopularTracks()
             setRecyclerViewPopularArtists()
-        }else{
+        } else {
             getPopularArtist()
             getPopularTracks()
         }
     }
+
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
     }
 
     private fun getPopularTracks() {
-        val service = RetrofitClient.retrofitInstance.create(APICallCatalog::class.java)
-        val callPopularTrack = service.getPopularTrack(1, 5)
-        callPopularTrack.enqueue(object : Callback<TrackResponse> {
-            override fun onResponse(call: Call<TrackResponse>, response: Response<TrackResponse>) {
-                if (response.isSuccessful) {
-                    itemTrack = response.body()?.items
-                    Log.d("trackPopular", response.body()?.items.toString())
-                    if (_binding != null) {
-                        setRecyclerViewPopularTracks()
-                    }
-                }
+        TrackManager.getTrack(1, 5) { track ->
+            itemTrack = track
+            if (_binding != null) {
+                setRecyclerViewPopularTracks()
             }
-
-            override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
-            }
-        })
+        }
     }
 
     private fun setRecyclerViewPopularTracks() {
@@ -118,25 +115,12 @@ class HomeFragment : Fragment() {
     }
 
     private fun getPopularArtist() {
-        val service = RetrofitClient.retrofitInstance.create(APICallCatalog::class.java)
-        val callPopularArtist = service.getPopularArtists(1, 5)
-        callPopularArtist.enqueue(object : Callback<ArtistResponse> {
-            override fun onResponse(
-                call: Call<ArtistResponse>,
-                response: Response<ArtistResponse>
-            ) {
-                if (response.isSuccessful) {
-                    itemArtists = response.body()?.items
-                    Log.d("trackArtist", response.body()?.items.toString())
-                    if (_binding != null) {
-                        setRecyclerViewPopularArtists()
-                    }
-                }
+        ArtistManager.getArtist(1,5){artist ->
+            itemArtists = artist
+            if (_binding != null) {
+                setRecyclerViewPopularArtists()
             }
-
-            override fun onFailure(call: Call<ArtistResponse>, t: Throwable) {
-            }
-        })
+        }
     }
 
     private fun setRecyclerViewPopularArtists() {
@@ -169,7 +153,7 @@ class HomeFragment : Fragment() {
         if (itemArtists != null && itemTrack != null) {
             setRecyclerViewPopularTracks()
             setRecyclerViewPopularArtists()
-        }else{
+        } else {
             getPopularArtist()
             getPopularTracks()
         }

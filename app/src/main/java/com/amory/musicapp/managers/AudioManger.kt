@@ -10,7 +10,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 //Singleton object
-object UriAudioManger {
+object AudioManger {
      fun getUriAudio(track: Track, callback: (String?) -> Unit) {
         val service = RetrofitClient.retrofitInstance.create(APICallAudio::class.java)
         val audioIds = track.audioFileIds.joinToString(separator = ",")

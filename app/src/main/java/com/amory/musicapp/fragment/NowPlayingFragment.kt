@@ -3,7 +3,6 @@ package com.amory.musicapp.fragment
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +12,7 @@ import com.amory.musicapp.R
 import com.amory.musicapp.activities.PlayMusicActivity
 import com.amory.musicapp.databinding.FragmentNowPlayingBinding
 import com.amory.musicapp.managers.PositionSongManger.setSongPosition
-import com.amory.musicapp.managers.UriAudioManger
+import com.amory.musicapp.managers.AudioManger
 import com.amory.musicapp.model.Track
 import com.bumptech.glide.Glide
 
@@ -53,7 +52,7 @@ class NowPlayingFragment : Fragment() {
         val listTracks = PlayMusicActivity.listTrack
         val positionTrack = PlayMusicActivity.positionTrack
         listTracks?.get(positionTrack)?.let {
-            UriAudioManger.getUriAudio(it) { uriAudio ->
+            AudioManger.getUriAudio(it) { uriAudio ->
                 uriAudio?.let { uri ->
                     PlayMusicActivity.musicService?.let { service ->
                         service.mediaPlayer?.apply {

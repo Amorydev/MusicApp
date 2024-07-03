@@ -5,7 +5,6 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.res.ColorStateList
-import android.icu.util.UniversalTimeScale.toLong
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
@@ -20,7 +19,7 @@ import androidx.core.content.ContextCompat
 import com.amory.musicapp.R
 import com.amory.musicapp.databinding.ActivityPlayMusicBinding
 import com.amory.musicapp.managers.PositionSongManger.setSongPosition
-import com.amory.musicapp.managers.UriAudioManger
+import com.amory.musicapp.managers.AudioManger
 import com.amory.musicapp.model.Track
 import com.amory.musicapp.model.eventBus.EventPostListTrack
 import com.amory.musicapp.service.MusicService
@@ -279,7 +278,7 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
     }
 
     private fun getUriAudio(track: Track) {
-        UriAudioManger.getUriAudio(track) { uri ->
+        AudioManger.getUriAudio(track) { uri ->
             uri?.let { playTrack(it) }
         }
     }

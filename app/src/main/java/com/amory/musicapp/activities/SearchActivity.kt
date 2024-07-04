@@ -1,10 +1,12 @@
 package com.amory.musicapp.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.amory.musicapp.Interface.OnCLickArtist
 import com.amory.musicapp.Interface.OnCLickTrack
@@ -15,8 +17,10 @@ import com.amory.musicapp.managers.SearchManager
 import com.amory.musicapp.model.Artists
 import com.amory.musicapp.model.SearchResponse
 import com.amory.musicapp.model.Track
+import com.amory.musicapp.model.eventBus.EventPostListTrack
 import com.amory.musicapp.retrofit.APICallSearch
 import com.amory.musicapp.retrofit.RetrofitClient
+import org.greenrobot.eventbus.EventBus
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -82,7 +86,13 @@ class SearchActivity : AppCompatActivity() {
     private fun setupRecyclerViewTrackSearch() {
         val adapterArtists = SearchTrackAdapter(listTrack, object : OnCLickTrack {
             override fun onCLickTrack(position: Int) {
-
+                val itemTrack: MutableList<Track> = mutableListOf()
+                itemTrack.add(listTrack[position])
+                EventBus.getDefault().postSticky(EventPostListTrack(itemTrack))
+                val intent = Intent(this@SearchActivity, PlayMusicActivity::class.java)
+                intent.putExtra("positionTrack", 0)
+                startActivity(intent)
+                finish()
             }
         })
         binding.searchTrack.adapter = adapterArtists

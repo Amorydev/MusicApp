@@ -6,24 +6,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.amory.musicapp.R
-import com.amory.musicapp.databinding.FragmentLibraryBinding
+import com.amory.musicapp.databinding.FragmentAddPlaylistBinding
 
-class LibraryFragment : Fragment() {
-    private var _binding : FragmentLibraryBinding ?= null
+
+class AddPlaylistFragment : Fragment() {
+    private var _binding: FragmentAddPlaylistBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentLibraryBinding.inflate(inflater,container,false)
+        _binding = FragmentAddPlaylistBinding.inflate(inflater,container,false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.AddPlaylistCV.setOnClickListener {
-            val fragment = AddPlaylistFragment()
+        onClickAddPlaylist()
+    }
+
+    private fun onClickAddPlaylist() {
+        binding.addPlaylistBtn.setOnClickListener {
+            val fragment = DetailPlaylistFragment()
 
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragment)
@@ -31,5 +36,6 @@ class LibraryFragment : Fragment() {
                 .commit()
         }
     }
+
 
 }

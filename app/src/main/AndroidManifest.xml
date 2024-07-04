@@ -18,6 +18,12 @@
         android:theme="@style/Theme.MusicApp"
         tools:targetApi="31">
         <activity
+            android:name=".activities.DetailPlaylistActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.AddPlaylistActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.SeeMoreTracksActivity"
             android:exported="false" />
         <activity
@@ -25,7 +31,7 @@
             android:exported="false" />
         <activity
             android:name=".activities.LoginActivity"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
             android:name=".activities.PlayMusicActivity"
             android:exported="false" />

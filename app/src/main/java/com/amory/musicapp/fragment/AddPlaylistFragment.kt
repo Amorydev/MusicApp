@@ -5,8 +5,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.amory.musicapp.R
 import com.amory.musicapp.databinding.FragmentAddPlaylistBinding
+import com.amory.musicapp.managers.PlaylistManager.addPlaylist
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody
 
 
 class AddPlaylistFragment : Fragment() {
@@ -17,7 +21,7 @@ class AddPlaylistFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentAddPlaylistBinding.inflate(inflater,container,false)
+        _binding = FragmentAddPlaylistBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -28,12 +32,25 @@ class AddPlaylistFragment : Fragment() {
 
     private fun onClickAddPlaylist() {
         binding.addPlaylistBtn.setOnClickListener {
-            val fragment = DetailPlaylistFragment()
+            val name = binding.namePlaylistET.text.trim().toString()
+            val isPublic: Boolean = binding.isPublicSW.isChecked
 
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .addToBackStack(null)
-                .commit()
+            val namePlaylist = RequestBody.create("text/plain".toMediaTypeOrNull(), name)
+            val isPublicPlaylist = RequestBody.create("text/plain".toMediaTypeOrNull(), isPublic.toString()) // Chuyển đổi boolean thành chuỗi
+            val description = RequestBody.create("text/plain".toMediaTypeOrNull(), "")
+            val thumbnail = RequestBody.create("text/plain".toMediaTypeOrNull(), "")
+
+            addPlaylist(namePlaylist, isPublicPlaylist, thumbnail, description) { isSuccess ->
+                if (isSuccess == true) {
+                    Toast.makeText(requireContext(), "Add playlist success", Toast.LENGTH_SHORT)
+                        .show()
+                    val fragment = DetailPlaylistFragment()
+                    requireActivity().supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, fragment)
+                        .addToBackStack(null)
+                        .commit()
+                }
+            }
         }
     }
 

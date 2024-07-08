@@ -26,7 +26,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/editText"
+            android:id="@+id/namePlaylistET"
             android:layout_width="380dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -40,16 +40,18 @@
             app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
         <Switch
-            android:id="@+id/switch1"
+            android:id="@+id/isPublicSW"
             android:layout_width="380dp"
             android:layout_height="50dp"
             android:layout_marginTop="10dp"
             android:text="Riêng tư"
             android:textColor="@color/white"
             android:textSize="24sp"
+            android:trackTint="@color/white"
+            android:thumbTint="#F44336"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/editText"
-            app:layout_constraintTop_toBottomOf="@+id/editText"
+            app:layout_constraintStart_toStartOf="@+id/namePlaylistET"
+            app:layout_constraintTop_toBottomOf="@+id/namePlaylistET"
             tools:ignore="UseSwitchCompatOrMaterialXml" />
 
         <androidx.appcompat.widget.AppCompatButton
@@ -65,7 +67,7 @@
             app:layout_constraintEnd_toStartOf="@+id/addPlaylistBtn"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/switch1" />
+            app:layout_constraintTop_toBottomOf="@+id/isPublicSW" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/addPlaylistBtn"
@@ -82,7 +84,7 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/appCompatButton2"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/switch1" />
+            app:layout_constraintTop_toBottomOf="@+id/isPublicSW" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

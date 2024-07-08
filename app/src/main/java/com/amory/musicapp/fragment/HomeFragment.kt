@@ -87,7 +87,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun getPopularTracks() {
-        TrackManager.getTrack(1, 5) { track ->
+        TrackManager.getTrack(1, 10) { track ->
             itemTrack = track
             if (_binding != null) {
                 setRecyclerViewPopularTracks()

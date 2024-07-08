@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="120dp"
-    android:layout_height="120dp">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_weight="1">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/imv_popular_artist"
-        android:layout_width="86dp"
-        android:layout_height="86dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:layout_marginTop="5dp"
         android:src="@drawable/sontungmtp"
         app:civ_border_color="#06930C"
@@ -18,11 +19,13 @@
 
     <TextView
         android:id="@+id/nameArtist"
-        android:layout_width="wrap_content"
+        android:layout_width="90dp"
         android:layout_height="wrap_content"
         android:text="Sơn Tùng M-TP"
+        android:textAlignment="center"
         android:textColor="@color/white"
-        android:textSize="14sp"
+        android:textSize="12sp"
+        android:layout_margin="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/imv_popular_artist"
         app:layout_constraintStart_toStartOf="@+id/imv_popular_artist"

@@ -38,7 +38,9 @@ class ProfileFragment : Fragment() {
         callAccount.enqueue(object : Callback<AuthResponse>{
             override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
                 if (response.isSuccessful){
-                    initView(response.body())
+                    if (_binding !=null){
+                        initView(response.body())
+                    }
                 }
             }
 

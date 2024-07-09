@@ -51,6 +51,7 @@ class AddPlaylistFragment : Fragment() {
                         .commit()
                 }
             }
+
         }
     }
 

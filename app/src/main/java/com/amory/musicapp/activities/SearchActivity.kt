@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.widget.EditText
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.amory.musicapp.Interface.OnCLickArtist
@@ -20,6 +21,16 @@ import com.amory.musicapp.model.Track
 import com.amory.musicapp.model.eventBus.EventPostListTrack
 import com.amory.musicapp.retrofit.APICallSearch
 import com.amory.musicapp.retrofit.RetrofitClient
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import retrofit2.Call
 import retrofit2.Callback
@@ -39,23 +50,48 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun onSearch() {
-        binding.searchET.addTextChangedListener(object : TextWatcher {
+        setupSearch(binding.searchET) { query ->
+            if (query.isEmpty()) {
+                listArtist.clear()
+                listTrack.clear()
+                setupRecyclerViewArtistSearch()
+                setupRecyclerViewTrackSearch()
+            } else {
+                searchArtist(query)
+                searchTrack(query)
+            }
+        }
+    }
+
+    private fun EditText.textChanges(): Flow<CharSequence> = callbackFlow {
+        val watcher = object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                if (s != null) {
+                    trySend(s)
+                }
+            }
+
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (s?.length == 0) {
-                    listArtist.clear()
-                    listTrack.clear()
-                } else {
-                    searchArtist(s.toString())
-                    searchTrack(s.toString())
-                }
             }
+        }
+        addTextChangedListener(watcher)
+        awaitClose { removeTextChangedListener(watcher) }
+    }
 
-            override fun afterTextChanged(s: Editable?) {
-            }
-        })
+    @OptIn(FlowPreview::class)
+    fun setupSearch(editText: EditText, searchFunction: (String) -> Unit) {
+        CoroutineScope(Dispatchers.Main).launch {
+            editText.textChanges()
+                //Doi 300ms sau lan thay doi cuoi
+                .debounce(300)
+                .filter { it.isEmpty().not() }
+                .collect {
+                    searchFunction.toString()
+                }
+        }
     }
 
     private fun searchArtist(search: String) {

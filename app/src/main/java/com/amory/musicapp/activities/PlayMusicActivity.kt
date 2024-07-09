@@ -5,6 +5,9 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.res.ColorStateList
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
@@ -24,6 +27,8 @@ import com.amory.musicapp.model.Track
 import com.amory.musicapp.model.eventBus.EventPostListTrack
 import com.amory.musicapp.service.MusicService
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -136,6 +141,7 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
     }
 
     private fun initView() {
+        setLayout()
         val position = positionTrack
         listTrack?.let { tracks ->
             tracks[position].let {
@@ -154,6 +160,22 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
             binding.repeatBtn.backgroundTintList =
                 ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white))
         }
+    }
+
+    private fun setLayout() {
+        Glide.with(baseContext)
+            .asBitmap()
+            .load(listTrack!![positionTrack].thumbnail)
+            .into(object : CustomTarget<Bitmap>(){
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    val drawable = BitmapDrawable(resources, resource)
+                    binding.root.background = drawable
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+                }
+            })
+
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {

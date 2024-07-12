@@ -45,6 +45,12 @@ class AddPlaylistFragment : Fragment() {
                     Toast.makeText(requireContext(), "Add playlist success", Toast.LENGTH_SHORT)
                         .show()
                     val fragment = DetailPlaylistFragment()
+
+                    val bundle = Bundle()
+                    bundle.putString("namePlaylist", name)
+                    bundle.putBoolean("isPublic", isPublic)
+                    fragment.arguments = bundle
+
                     requireActivity().supportFragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, fragment)
                         .addToBackStack(null)

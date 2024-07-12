@@ -89,7 +89,7 @@ class SearchActivity : AppCompatActivity() {
                 .debounce(300)
                 .filter { it.isEmpty().not() }
                 .collect {
-                    searchFunction.toString()
+                    searchFunction(it.toString())
                 }
         }
     }

@@ -2,27 +2,35 @@ package com.amory.musicapp.activities
 
 import android.annotation.SuppressLint
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.util.AttributeSet
 import android.util.Log
+import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import androidx.palette.graphics.Palette
 import com.amory.musicapp.R
 import com.amory.musicapp.databinding.ActivityPlayMusicBinding
 import com.amory.musicapp.managers.PositionSongManger.setSongPosition
 import com.amory.musicapp.managers.AudioManger
+import com.amory.musicapp.managers.AudioManger.getUriAudio
 import com.amory.musicapp.model.Track
 import com.amory.musicapp.model.eventBus.EventPostListTrack
 import com.amory.musicapp.service.MusicService
@@ -32,8 +40,11 @@ import com.bumptech.glide.request.transition.Transition
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import kotlin.math.sqrt
 
 class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
     private val handler = Handler(Looper.getMainLooper())
@@ -61,7 +72,6 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         bindService(intent, this, BIND_AUTO_CREATE)
         startService(intent)
         getPositionTrack()
-        initView()
         onClickBack()
         onClickShuffle()
         shuffleTracks()
@@ -74,6 +84,7 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
             nextOrPreviousMusic(increment = true)
         }
     }
+
 
     private fun onClickRepeat() {
         binding.repeatBtn.setOnClickListener {
@@ -141,16 +152,19 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
     }
 
     private fun initView() {
-        setLayout()
         val position = positionTrack
-        listTrack?.let { tracks ->
-            tracks[position].let {
-                binding.nameArtistTXT.text = it.artists.joinToString(", ") { artist -> artist.name }
-                binding.songNameTXT.text = it.name
-                Glide.with(binding.root).load(it.thumbnail).into(binding.imvTrack)
-                binding.seekBar.progress = 0
+        if (listTrack != null && listTrack!!.isNotEmpty()) {
+            listTrack?.let { tracks ->
+                tracks[position].let {
+                    binding.nameArtistTXT.text =
+                        it.artists.joinToString(", ") { artist -> artist.name }
+                    binding.songNameTXT.text = it.name
+                    Glide.with(binding.root).load(it.thumbnail).into(binding.imvTrack)
+                    binding.seekBar.progress = 0
+                    setLayout()
+                }
             }
-        } ?: run {
+        }else {
             Log.e("PlayMusicActivity", "listTrack is null")
         }
         if (repeat) {
@@ -163,19 +177,30 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
     }
 
     private fun setLayout() {
-        Glide.with(baseContext)
-            .asBitmap()
-            .load(listTrack!![positionTrack].thumbnail)
-            .into(object : CustomTarget<Bitmap>(){
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    val drawable = BitmapDrawable(resources, resource)
-                    binding.root.background = drawable
-                }
+        listTrack?.let { tracks ->
+            Glide.with(baseContext)
+                .asBitmap()
+                .load(tracks[positionTrack].thumbnail)
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                        Palette.from(resource).generate { palette ->
+                            val dominantColor = palette?.dominantSwatch?.rgb ?: Color.TRANSPARENT
 
-                override fun onLoadCleared(placeholder: Drawable?) {
-                }
-            })
+                            val gradientDrawable = GradientDrawable()
+                            gradientDrawable.shape  = GradientDrawable.RECTANGLE
+                            gradientDrawable.colors = intArrayOf( dominantColor,0xFF434343.toInt()) // Đổi endColor thành màu đỏ
 
+                            binding.root.background = gradientDrawable
+
+                        }
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                    }
+                })
+        } ?: run {
+            Log.e("PlayMusicActivity", "listTrack is null")
+        }
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -193,10 +218,6 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
 
     private fun playTrack(uriAudio: String) {
         val audioUri = Uri.parse(uriAudio)
-        if (musicService?.mediaPlayer?.isPlaying == true && musicService?.mediaPlayer?.currentPosition != 0) {
-            // MediaPlayer đang phát, không cần reset
-            return
-        }
         createMediaPlayer(audioUri)
         onClickPlay()
         setUpSeekBar()
@@ -262,17 +283,16 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
     }
 
     private fun nextOrPreviousMusic(increment: Boolean) {
+        musicService!!.mediaPlayer!!.reset()
         if (increment) {
             setSongPosition(increment = false)
             Log.d("position", positionTrack.toString())
             initView()
-            /*playMusic()*/
             getUriAudio(listTrack!![positionTrack])
         } else {
             setSongPosition(increment = true)
             Log.d("position", positionTrack.toString())
             initView()
-            /*playMusic()*/
             getUriAudio(listTrack!![positionTrack])
         }
     }

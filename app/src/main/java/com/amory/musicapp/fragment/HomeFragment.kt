@@ -93,9 +93,11 @@ class HomeFragment : Fragment() {
                 setRecyclerViewPopularTracks()
             }
         }
+
     }
 
     private fun setRecyclerViewPopularTracks() {
+        /*Log.d("itemTrack", itemTrack.toString())*/
         val adapter = PopularTrackAdapter(itemTrack!!, object : OnCLickTrack {
             override fun onCLickTrack(position: Int) {
                 EventBus.getDefault().postSticky(EventPostListTrack(itemTrack!!))

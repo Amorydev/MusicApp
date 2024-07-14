@@ -202,8 +202,8 @@ class LoginActivity : AppCompatActivity() {
         response: RegistrationResponse?,
         ex: AuthorizationException?
     ) {
-        mAuthStateManager.updateAfterRegistration(response,ex)
-        mClientId.set(response?.clientId)
+        mAuthStateManager.updateAfterRegistration(response!!,ex)
+        mClientId.set(response.clientId)
         initializeAuthRequest()
     }
 

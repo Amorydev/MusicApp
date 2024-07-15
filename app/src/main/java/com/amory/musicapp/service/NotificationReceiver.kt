@@ -74,7 +74,7 @@ class NotificationReceiver:BroadcastReceiver() {
         setLayout(listTracks, positionTrack)
         playMusic()
     }
-    private fun setLayout(listTrack : MutableList<Track>?, positionTrack : Int){
+    private fun setLayout(listTrack: List<Track>?, positionTrack: Int){
         listTrack.let { tracks ->
             tracks!![positionTrack].let {
                 PlayMusicActivity.binding.nameArtistTXT.text = it.artists.joinToString(", ") { artist -> artist.name }

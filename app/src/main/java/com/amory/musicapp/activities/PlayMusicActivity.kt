@@ -30,7 +30,6 @@ import com.amory.musicapp.R
 import com.amory.musicapp.databinding.ActivityPlayMusicBinding
 import com.amory.musicapp.managers.PositionSongManger.setSongPosition
 import com.amory.musicapp.managers.AudioManger
-import com.amory.musicapp.managers.AudioManger.getUriAudio
 import com.amory.musicapp.model.Track
 import com.amory.musicapp.model.eventBus.EventPostListTrack
 import com.amory.musicapp.service.MusicService
@@ -40,11 +39,8 @@ import com.bumptech.glide.request.transition.Transition
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import java.io.ByteArrayOutputStream
-import java.io.InputStream
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import kotlin.math.sqrt
 
 class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
     private val handler = Handler(Looper.getMainLooper())
@@ -53,7 +49,7 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
 
     companion object {
         var musicService: MusicService? = null
-        var listTrack: MutableList<Track>? = null
+        var listTrack: List<Track>? = null
         var positionTrack: Int = 0
         var isPlayingMusic: Boolean = false
         var repeat: Boolean = false
@@ -115,7 +111,7 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
 
     private fun shuffleTracks() {
         if (shuffle) {
-            listTrack!!.shuffle()
+            listTrack!!.shuffled()
         }
     }
 

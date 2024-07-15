@@ -26,6 +26,12 @@ class PopularTrackAdapter(private val listTrack: MutableList<Track>, private val
         val remainingSeconds = seconds % 60
         return String.format("%02d:%02d", minutes, remainingSeconds)
     }
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateTracks(newTracks: MutableList<Track>) {
+        listTrack.clear()
+        listTrack.addAll(newTracks)
+        notifyDataSetChanged()
+    }
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

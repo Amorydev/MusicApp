@@ -157,6 +157,7 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         getTokenClient()
         getTokenAuth()
+
     }
 
     private fun getTokenAuth() {

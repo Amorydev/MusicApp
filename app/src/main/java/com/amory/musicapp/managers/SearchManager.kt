@@ -52,7 +52,7 @@ object SearchManager {
                     val results = response.body()?.results
                     listTrack = results!!.track.items
                     Log.d("list", listTrack.toString())
-                    callback(listTrack)
+                    callback(listTrack as MutableList<Track>)
                 }
             }
 

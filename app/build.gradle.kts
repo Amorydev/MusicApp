@@ -85,5 +85,6 @@ dependencies {
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.2")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
-
+    //viewModel
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3")
 }

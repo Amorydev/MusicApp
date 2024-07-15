@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.amory.musicapp.Interface.OnCLickArtist
 import com.amory.musicapp.Interface.OnCLickTrack
@@ -25,35 +27,42 @@ import com.amory.musicapp.model.Artists
 import com.amory.musicapp.model.Track
 import com.amory.musicapp.model.TrackResponse
 import com.amory.musicapp.model.eventBus.EventPostListTrack
+import com.amory.musicapp.viewModel.HomeViewModel
 import org.greenrobot.eventbus.EventBus
 
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-    private var itemTrack: MutableList<Track>? = null
-    private var itemArtists: MutableList<Artists>? = null
+
+    private lateinit var viewModel: HomeViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        init()
-    }
-
-    private fun init() {
-        binding.searchET.requestFocus()
-        getPopularTracks()
-        getPopularArtist()
+        viewModel = ViewModelProvider(this)[HomeViewModel::class.java]
+        binding.lifecycleOwner = viewLifecycleOwner
+        binding.viewModel = viewModel
         onCLickSearch()
         onClickSeeMoreTracks()
+        return binding.root
     }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.init()
+        observeViewModel()
+
+        viewModel.trackListState?.let {
+            binding.popularTracks.layoutManager?.onRestoreInstanceState(it)
+        }
+
+        viewModel.artistListState?.let {
+            binding.rvPopularArtists.layoutManager?.onRestoreInstanceState(it)
+        }
+    }
+
 
     private fun onClickSeeMoreTracks() {
         binding.seeMoreTrackTxt.setOnClickListener {
@@ -70,95 +79,78 @@ class HomeFragment : Fragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        if (itemTrack != null && itemArtists != null) {
-            setRecyclerViewPopularTracks()
-            setRecyclerViewPopularArtists()
-        } else {
-            getPopularArtist()
-            getPopularTracks()
-        }
-    }
+
 
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
     }
 
-    private fun getPopularTracks() {
-        TrackManager.getTrack(1, 10) { track ->
-            itemTrack = track
-            if (_binding != null) {
-                setRecyclerViewPopularTracks()
-            }
-        }
-
-    }
-
-    private fun setRecyclerViewPopularTracks() {
-        /*Log.d("itemTrack", itemTrack.toString())*/
-        val adapter = PopularTrackAdapter(itemTrack!!, object : OnCLickTrack {
-            override fun onCLickTrack(position: Int) {
-                EventBus.getDefault().postSticky(EventPostListTrack(itemTrack!!))
-                val intent = Intent(requireContext(), PlayMusicActivity::class.java)
-                intent.putExtra("positionTrack", position)
-                startActivity(intent)
+    private fun observeViewModel(){
+        viewModel.itemTrack.observe(viewLifecycleOwner, Observer { itemTrack ->
+            itemTrack?.let {
+                setRecyclerViewPopularTracks(it)
+                Log.d("itemTrack", itemTrack.toString())
             }
         })
-
-        binding.popularTracks.adapter = adapter
-        binding.popularTracks.layoutManager = LinearLayoutManager(
-            requireContext(),
-            LinearLayoutManager.VERTICAL,
-            false
-        )
-        binding.popularTracks.setHasFixedSize(true)
-    }
-
-    private fun getPopularArtist() {
-        ArtistManager.getArtist(1,5){artist ->
-            itemArtists = artist
-            if (_binding != null) {
-                setRecyclerViewPopularArtists()
-            }
-        }
-    }
-
-    private fun setRecyclerViewPopularArtists() {
-        val adapter = PopularArtistsAdapter(itemArtists!!, object : OnCLickArtist {
-            override fun onCLickArtist(position: Int) {
-                val selectedArtist = itemArtists!![position]
-                val fragment = DetailArtistFragment()
-
-                val bundle = Bundle()
-                bundle.putSerializable("selectedArtist", selectedArtist)
-                fragment.arguments = bundle
-
-                requireActivity().supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .addToBackStack(null)
-                    .commit()
+        viewModel.itemArtists.observe(viewLifecycleOwner, Observer { itemArtist ->
+            itemArtist?.let {
+                setRecyclerViewPopularArtists(it)
             }
         })
-        binding.rvPopularArtists.adapter = adapter
-        binding.rvPopularArtists.layoutManager = LinearLayoutManager(
-            requireContext(),
-            LinearLayoutManager.HORIZONTAL,
-            false
-        )
-        binding.rvPopularArtists.setHasFixedSize(true)
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (itemArtists != null && itemTrack != null) {
-            setRecyclerViewPopularTracks()
-            setRecyclerViewPopularArtists()
+    private fun setRecyclerViewPopularTracks(itemTrack: MutableList<Track>) {
+        if (binding.popularTracks.adapter == null) {
+            val adapter = PopularTrackAdapter(itemTrack, object : OnCLickTrack {
+                override fun onCLickTrack(position: Int) {
+                    EventBus.getDefault().postSticky(EventPostListTrack(itemTrack))
+                    val intent = Intent(requireContext(), PlayMusicActivity::class.java)
+                    intent.putExtra("positionTrack", position)
+                    startActivity(intent)
+                }
+            })
+
+            binding.popularTracks.adapter = adapter
+            binding.popularTracks.layoutManager = LinearLayoutManager(
+                requireContext(),
+                LinearLayoutManager.VERTICAL,
+                false
+            )
+            binding.popularTracks.setHasFixedSize(true)
         } else {
-            getPopularArtist()
-            getPopularTracks()
+            (binding.popularTracks.adapter as PopularTrackAdapter).updateTracks(itemTrack)
         }
     }
+
+    private fun setRecyclerViewPopularArtists(itemArtists: MutableList<Artists>) {
+        if (binding.rvPopularArtists.adapter == null) {
+            val adapter = PopularArtistsAdapter(itemArtists, object : OnCLickArtist {
+                override fun onCLickArtist(position: Int) {
+                    val selectedArtist = itemArtists[position]
+                    val fragment = DetailArtistFragment()
+
+                    val bundle = Bundle()
+                    bundle.putSerializable("selectedArtist", selectedArtist)
+                    fragment.arguments = bundle
+
+                    requireActivity().supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, fragment)
+                        .addToBackStack(null)
+                        .commit()
+                }
+            })
+            binding.rvPopularArtists.adapter = adapter
+            binding.rvPopularArtists.layoutManager = LinearLayoutManager(
+                requireContext(),
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+            binding.rvPopularArtists.setHasFixedSize(true)
+        } else {
+            (binding.rvPopularArtists.adapter as PopularArtistsAdapter).updateArtists(itemArtists)
+        }
+    }
+
 
 }

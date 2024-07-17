@@ -10,7 +10,7 @@ import com.amory.musicapp.model.eventBus.EventPostIdsArtist
 import com.bumptech.glide.Glide
 import org.greenrobot.eventbus.EventBus
 
-class SearchArtistAdapter(private val listArtists:MutableList<Artists>, private val onCLickArtist: OnCLickArtist):
+class SearchArtistAdapter(private val listArtists:List<Artists>, private val onCLickArtist: OnCLickArtist):
     RecyclerView.Adapter<SearchArtistAdapter.viewHolder>() {
     inner class viewHolder(private val binding: LayoutRecyclerviewSearchArtistBinding):
         RecyclerView.ViewHolder(binding.root){

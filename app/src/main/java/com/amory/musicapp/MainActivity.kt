@@ -157,7 +157,6 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         getTokenClient()
         getTokenAuth()
-
     }
 
     private fun getTokenAuth() {
@@ -240,12 +239,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (!PlayMusicActivity.isPlayingMusic && PlayMusicActivity.musicService != null){
+        /*if (!PlayMusicActivity.isPlayingMusic && PlayMusicActivity.musicService != null){
             PlayMusicActivity.musicService!!.stopForeground(true)
             PlayMusicActivity.musicService!!.mediaPlayer!!.release()
             PlayMusicActivity.musicService!!.mediaPlayer = null
             exitProcess(1)
-        }
+        }*/
     }
 
 }

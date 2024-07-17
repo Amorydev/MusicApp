@@ -17,7 +17,7 @@ class NowPlayingViewModel : ViewModel() {
     private var _isPlaying = MutableLiveData<Boolean>()
     val isPlaying: LiveData<Boolean> get() = _isPlaying
 
-    fun initialize() {
+    /*fun initialize() {
         updateCurrentTrack()
         _isPlaying.value = PlayMusicActivity.isPlayingMusic
     }
@@ -75,5 +75,5 @@ class NowPlayingViewModel : ViewModel() {
         PlayMusicActivity.musicService?.showNotification(R.drawable.ic_pause_now)
         updateCurrentTrack()
         playMusic()
-    }
+    }*/
 }

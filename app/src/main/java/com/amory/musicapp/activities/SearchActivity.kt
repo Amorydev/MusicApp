@@ -7,7 +7,12 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.widget.EditText
+import androidx.activity.viewModels
 import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.amory.musicapp.Interface.OnCLickArtist
 import com.amory.musicapp.Interface.OnCLickTrack
@@ -21,6 +26,7 @@ import com.amory.musicapp.model.Track
 import com.amory.musicapp.model.eventBus.EventPostListTrack
 import com.amory.musicapp.retrofit.APICallSearch
 import com.amory.musicapp.retrofit.RetrofitClient
+import com.amory.musicapp.viewModel.SearchViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -38,27 +44,38 @@ import retrofit2.Response
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchBinding
-    private lateinit var listArtist: MutableList<Artists>
-    private lateinit var listTrack: MutableList<Track>
+    private val viewModel: SearchViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        listTrack = mutableListOf()
-        listArtist = mutableListOf()
+        binding.searchViewModel = viewModel
         onSearch()
+        observeViewModel()
     }
+
+    private fun observeViewModel() {
+        viewModel.artists.observe(this, Observer { artists ->
+            if (artists != null) {
+                setupRecyclerViewArtistSearch(artists)
+            }
+        })
+
+        viewModel.tracks.observe(this, Observer { tracks ->
+            if (tracks != null) {
+                setupRecyclerViewTrackSearch(tracks)
+            }
+        })
+    }
+
 
     private fun onSearch() {
         setupSearch(binding.searchET) { query ->
             if (query.isEmpty()) {
-                listArtist.clear()
-                listTrack.clear()
-                setupRecyclerViewArtistSearch()
-                setupRecyclerViewTrackSearch()
+               viewModel.clearResults()
             } else {
-                searchArtist(query)
-                searchTrack(query)
+                viewModel.searchArtist(query)
+                viewModel.searchTrack(query)
             }
         }
     }
@@ -94,14 +111,7 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    private fun searchArtist(search: String) {
-        SearchManager.getArtistSearch(search) { artist ->
-            listArtist = artist!!
-            setupRecyclerViewArtistSearch()
-        }
-    }
-
-    private fun setupRecyclerViewArtistSearch() {
+    private fun setupRecyclerViewArtistSearch(listArtist : List<Artists>) {
         val adapterArtists = SearchArtistAdapter(listArtist, object : OnCLickArtist {
             override fun onCLickArtist(position: Int) {
 
@@ -112,18 +122,13 @@ class SearchActivity : AppCompatActivity() {
             LinearLayoutManager(this@SearchActivity, LinearLayoutManager.HORIZONTAL, false)
     }
 
-    private fun searchTrack(search: String) {
-        SearchManager.getTrackSearch(search) { track ->
-            listTrack = track!!
-            setupRecyclerViewTrackSearch()
-        }
-    }
 
-    private fun setupRecyclerViewTrackSearch() {
-        val adapterArtists = SearchTrackAdapter(listTrack, object : OnCLickTrack {
+
+    private fun setupRecyclerViewTrackSearch(tracks: List<Track>) {
+        val adapterArtists = SearchTrackAdapter(tracks, object : OnCLickTrack {
             override fun onCLickTrack(position: Int) {
-                val itemTrack: MutableList<Track> = mutableListOf()
-                itemTrack.add(listTrack[position])
+                val itemTrack: ArrayList<Track> = arrayListOf()
+                itemTrack.add(tracks[position])
                 EventBus.getDefault().postSticky(EventPostListTrack(itemTrack))
                 val intent = Intent(this@SearchActivity, PlayMusicActivity::class.java)
                 intent.putExtra("positionTrack", 0)

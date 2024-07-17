@@ -14,7 +14,7 @@ import kotlin.system.exitProcess
 
 class NotificationReceiver:BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
-        when(intent?.action){
+        /*when(intent?.action){
             ApplicationClass.PLAY -> {
                 if (PlayMusicActivity.isPlayingMusic){
                     pauseMusic()
@@ -23,11 +23,11 @@ class NotificationReceiver:BroadcastReceiver() {
                 }
             }
             ApplicationClass.NEXT -> {
-                /*Toast.makeText(context,"Next clicker",Toast.LENGTH_SHORT).show()*/
+                *//*Toast.makeText(context,"Next clicker",Toast.LENGTH_SHORT).show()*//*
                 nextOrPreviousMusic(false)
             }
             ApplicationClass.PREVIOUS -> {
-                /*Toast.makeText(context,"Previoud clicker",Toast.LENGTH_SHORT).show()*/
+                *//*Toast.makeText(context,"Previoud clicker",Toast.LENGTH_SHORT).show()*//*
                 nextOrPreviousMusic(true)
             }
             ApplicationClass.EXIT -> {
@@ -35,10 +35,10 @@ class NotificationReceiver:BroadcastReceiver() {
                 PlayMusicActivity.musicService = null
                 exitProcess(1)
             }
-        }
+        }*/
     }
 
-    private fun playMusic(){
+/*    private fun playMusic(){
         PlayMusicActivity.isPlayingMusic = true
         PlayMusicActivity.musicService!!.mediaPlayer!!.start()
         PlayMusicActivity.musicService!!.showNotification(R.drawable.ic_pause_now)
@@ -83,5 +83,5 @@ class NotificationReceiver:BroadcastReceiver() {
                 PlayMusicActivity.binding.seekBar.progress = 0
             }
         }
-    }
+    }*/
 }

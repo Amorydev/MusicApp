@@ -1,7 +1,6 @@
 package com.amory.musicapp.managers
 
 import android.util.Log
-import com.amory.musicapp.activities.PlayMusicActivity.Companion.listTrack
 import com.amory.musicapp.model.Artists
 import com.amory.musicapp.model.SearchResponse
 import com.amory.musicapp.model.Track
@@ -50,7 +49,7 @@ object SearchManager {
             ) {
                 if (response.isSuccessful) {
                     val results = response.body()?.results
-                    listTrack = results!!.track.items
+                    val listTrack = results!!.track.items
                     Log.d("list", listTrack.toString())
                     callback(listTrack as MutableList<Track>)
                 }

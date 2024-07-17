@@ -4,8 +4,8 @@ import com.amory.musicapp.activities.PlayMusicActivity
 
 object PositionSongManger {
     fun setSongPosition(increment: Boolean) {
-        if (!PlayMusicActivity.repeat){
-            if (increment) {
+       /* if (!PlayMusicActivity.repeat){*/
+           /* if (increment) {
                 if (PlayMusicActivity.listTrack!!.size - 1 == PlayMusicActivity.positionTrack) {
                     PlayMusicActivity.positionTrack = 0
                 } else {
@@ -17,7 +17,7 @@ object PositionSongManger {
                 } else {
                     --PlayMusicActivity.positionTrack
                 }
-            }
-        }
+            }*/
+/*        }*/
     }
 }

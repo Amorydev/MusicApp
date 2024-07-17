@@ -35,7 +35,7 @@ class MusicService : Service() {
             return this@MusicService
         }
     }
-    @SuppressLint("ForegroundServiceType")
+   /* @SuppressLint("ForegroundServiceType")
     fun showNotification(playBtn:Int){
 
         val preIntent = Intent(baseContext, NotificationReceiver::class.java).setAction(ApplicationClass.PREVIOUS)
@@ -81,7 +81,7 @@ class MusicService : Service() {
                 }
             })
 
-    }
+    }*/
 
     override fun onDestroy() {
         super.onDestroy()

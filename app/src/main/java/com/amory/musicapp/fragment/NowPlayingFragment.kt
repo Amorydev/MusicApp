@@ -31,7 +31,7 @@ class NowPlayingFragment : Fragment() {
         _binding = FragmentNowPlayingBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.nowPlayingViewModel = nowPlayingViewModel
-        nowPlayingViewModel.initialize()
+       /* nowPlayingViewModel.initialize()*/
         nowPlayingViewModel.currentTracks.observe(viewLifecycleOwner, Observer { track ->
             binding.songNameTXT.text = track?.name
             binding.nameArtistTXT.text = track?.artists?.joinToString(", ") { it.name }
@@ -45,12 +45,12 @@ class NowPlayingFragment : Fragment() {
                 binding.imvPlay.setImageResource(R.drawable.ic_play_now)
             }
         })
-        binding.imvPlay.setOnClickListener {
+    /*    binding.imvPlay.setOnClickListener {
             nowPlayingViewModel.playOrPauseMusic()
         }
         binding.nextBtn.setOnClickListener {
             nowPlayingViewModel.nextSong()
-        }
+        }*/
         binding.root.visibility = View.INVISIBLE
         // Handle click on the Now Playing fragment to open PlayMusicActivity
         binding.root.setOnClickListener {
@@ -68,10 +68,10 @@ class NowPlayingFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        nowPlayingViewModel.initialize()
-        if (PlayMusicActivity.musicService != null) {
+       /* nowPlayingViewModel.initialize()*/
+        /*if (PlayMusicActivity.musicService != null) {
             binding.root.visibility = View.VISIBLE
-        }
+        }*/
         nowPlayingViewModel.currentTracks.observe(viewLifecycleOwner, Observer { track ->
             binding.songNameTXT.text = track?.name
             binding.nameArtistTXT.text = track?.artists?.joinToString(", ") { it.name }
@@ -88,12 +88,14 @@ class NowPlayingFragment : Fragment() {
 
     private fun openPlayMusicActivity() {
         val intent = Intent(requireContext(), PlayMusicActivity::class.java).apply {
+/*
             putExtra("positionTrack", PlayMusicActivity.positionTrack)
+*/
             putExtra("class", "NowPlaying")
-            putExtra(
+           /* putExtra(
                 "currentPosition",
                 PlayMusicActivity.musicService?.mediaPlayer?.currentPosition
-            )
+            )*/
         }
         ContextCompat.startActivity(requireContext(), intent, null)
     }

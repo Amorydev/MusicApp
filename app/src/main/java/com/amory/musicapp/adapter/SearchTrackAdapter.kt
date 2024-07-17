@@ -9,7 +9,7 @@ import com.amory.musicapp.databinding.LayoutRecyclerviewSearchTrackBinding
 import com.amory.musicapp.model.Track
 import com.bumptech.glide.Glide
 
-class SearchTrackAdapter(private val listTrack: MutableList<Track>, private val onCLickTrack: OnCLickTrack) : RecyclerView.Adapter<SearchTrackAdapter.ViewHolder>() {
+class SearchTrackAdapter(private val listTrack: List<Track>, private val onCLickTrack: OnCLickTrack) : RecyclerView.Adapter<SearchTrackAdapter.ViewHolder>() {
 
     inner class ViewHolder(private val binding: LayoutRecyclerviewSearchTrackBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(data: Track) {

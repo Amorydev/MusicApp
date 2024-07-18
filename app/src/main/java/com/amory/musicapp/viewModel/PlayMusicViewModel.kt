@@ -25,6 +25,7 @@ import com.amory.musicapp.service.MusicService
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -52,8 +53,11 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
     private val _duration = MutableLiveData<Int>()
     val duration: LiveData<Int> get() = _duration
 
+    private val _musicService = MutableLiveData<MusicService?>()
+    val musicService: LiveData<MusicService?> get() = _musicService
+
+
     @SuppressLint("StaticFieldLeak")
-    var musicService: MusicService? = null
     private var listTracks: List<Track>? = null
     private var positionTrack: Int = 0
     private val handler = Handler(Looper.getMainLooper())
@@ -70,8 +74,10 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     private fun updateTrack() {
-        _track.value = listTracks!![positionTrack]
-        loadBackgroundGradient()
+        viewModelScope.launch {
+            _track.value = listTracks!![positionTrack]
+            loadBackgroundGradient()
+        }
     }
 
     override fun onCleared() {
@@ -131,55 +137,68 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
+    fun setMusicService(service: MusicService) {
+        _musicService.value = service
+    }
+
+
+    fun playMusic() {
+        Log.d("PlayMusicViewModel", "playMusic called, isPlaying: ${_isPlaying.value}")
+        _musicService.value?.mediaPlayer?.let {
+            if (!it.isPlaying) {
+                _isPlaying.value = true
+                startSeekBarUpdate()
+                it.start()
+            }
+        }
+    }
+
+    fun pauseMusic() {
+        Log.d("PlayMusicViewModel", "pauseMusic called, isPlaying: ${_isPlaying.value}")
+        _musicService.value?.mediaPlayer?.let {
+            if (it.isPlaying) {
+                _isPlaying.value = false
+                stopSeekBarUpdate()
+                it.pause()
+            }
+        }
+    }
+
     private fun playTrack() {
-        val track = listTracks!![positionTrack] ?: return
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
+            val track = listTracks!![positionTrack] ?: return@launch
             getUriAudio(track) { uri ->
                 val uriAudio = Uri.parse(uri)
                 createMediaPlayer(uriAudio)
             }
         }
-        musicService!!.mediaPlayer!!.setOnCompletionListener {
-            _isPlaying.value = false
-            _currentPosition.value = 0
-        }
     }
 
     private fun createMediaPlayer(uriAudio: Uri?) {
-        try {
-            musicService?.mediaPlayer = MediaPlayer().apply {
-                reset()
-                setDataSource(getApplication<Application>().applicationContext, uriAudio!!)
-                setOnPreparedListener {
-                    _isPlaying.value = true
-                    start()
-                    _duration.value = duration
-                    startSeekBarUpdate()
+        viewModelScope.launch(Dispatchers.Main) {
+            try {
+                _musicService.value?.mediaPlayer?.reset()  // Reset existing MediaPlayer instance if any
+                _musicService.value?.mediaPlayer = MediaPlayer().apply {
+                    setDataSource(getApplication<Application>().applicationContext, uriAudio!!)
+                    setOnPreparedListener {
+                        _isPlaying.value = true
+                        start()
+                        _duration.value = duration
+                        startSeekBarUpdate()
+                    }
+                    prepareAsync()
                 }
-                prepareAsync()
+            } catch (ex: Exception) {
+                // Handle exception
+                return@launch
             }
-        } catch (ex: Exception) {
-            // Handle exception
-            return
         }
-    }
-
-    fun playMusic() {
-        musicService?.mediaPlayer?.start()
-        _isPlaying.value = true
-        startSeekBarUpdate()
-    }
-
-    fun pauseMusic() {
-        musicService?.mediaPlayer?.pause()
-        _isPlaying.value = false
-        stopSeekBarUpdate()
     }
 
     private fun startSeekBarUpdate() {
         handler.postDelayed(object : Runnable {
             override fun run() {
-                musicService?.mediaPlayer?.let {
+                _musicService.value?.mediaPlayer?.let {
                     _currentPosition.value = it.currentPosition
                 }
                 handler.postDelayed(this, 1000)

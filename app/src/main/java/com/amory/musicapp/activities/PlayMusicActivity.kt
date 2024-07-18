@@ -72,6 +72,7 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         })
 
         viewModel.isPlaying.observe(this, Observer { isPlaying ->
+            Log.d("isPlaying",isPlaying.toString())
             isPlaying?.let {
                 binding.playImv.setImageResource(if (it) R.drawable.ic_pause_now else R.drawable.ic_play_now)
                 if (it) {
@@ -136,7 +137,7 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
-                    viewModel.musicService?.mediaPlayer?.seekTo(progress)
+                    viewModel.musicService.value?.mediaPlayer?.seekTo(progress)
                 }
             }
 
@@ -147,7 +148,8 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         val binder = service as MusicService.MyBinder
-        viewModel.musicService = binder.currentService()
+        val musicService = binder.currentService()
+        viewModel.setMusicService(musicService)
         Executors.newSingleThreadExecutor().execute {
 /*
             viewModel.musicService?.showNotification(R.drawable.ic_pause_now)
@@ -159,7 +161,7 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
     }
 
     override fun onServiceDisconnected(name: ComponentName?) {
-        viewModel.musicService = null
+        viewModel.musicService.value?.mediaPlayer = null
     }
 
     private fun onStartAnim() {
@@ -177,6 +179,7 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         binding.imvTrack.animate().cancel()
     }
 
+    @SuppressLint("DefaultLocale")
     private fun formatTime(millis: Long): String {
         val minutes = (millis / 1000) / 60
         val seconds = (millis / 1000) % 60

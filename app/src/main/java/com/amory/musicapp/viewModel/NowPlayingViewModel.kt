@@ -17,18 +17,18 @@ class NowPlayingViewModel : ViewModel() {
     private var _isPlaying = MutableLiveData<Boolean>()
     val isPlaying: LiveData<Boolean> get() = _isPlaying
 
-    /*fun initialize() {
+    fun initialize() {
         updateCurrentTrack()
-        _isPlaying.value = PlayMusicActivity.isPlayingMusic
+        _isPlaying.value = PlayMusicActivity.isPlayingSend
     }
 
     private fun updateCurrentTrack() {
-        val position = PlayMusicActivity.positionTrack
-        _currentTracks.value = PlayMusicActivity.listTrack?.get(position)
+        val position = PlayMusicActivity.positionTrackSend
+        _currentTracks.value = PlayMusicActivity.listTracksSend?.get(position)
     }
 
     fun playOrPauseMusic() {
-        if (PlayMusicActivity.isPlayingMusic) {
+        if (PlayMusicActivity.isPlayingSend) {
             pauseMusic()
         } else {
             playMusic()
@@ -36,33 +36,33 @@ class NowPlayingViewModel : ViewModel() {
     }
 
     private fun playMusic() {
-        PlayMusicActivity.isPlayingMusic = true
-        PlayMusicActivity.musicService?.mediaPlayer?.apply {
+        PlayMusicActivity.isPlayingSend = true
+        PlayMusicActivity.musicServiceSend?.mediaPlayer?.apply {
             start()
             binding.imvPlay.setImageResource(R.drawable.ic_pause_now)
-            PlayMusicActivity.musicService!!.showNotification(R.drawable.ic_pause_now)
+            PlayMusicActivity.musicServiceSend!!.showNotification(R.drawable.ic_pause_now)
         }
         _isPlaying.value = true
     }
 
     private fun pauseMusic() {
-        PlayMusicActivity.isPlayingMusic = false
-        PlayMusicActivity.musicService?.mediaPlayer?.apply {
+        PlayMusicActivity.isPlayingSend = false
+        PlayMusicActivity.musicServiceSend?.mediaPlayer?.apply {
             pause()
             binding.imvPlay.setImageResource(R.drawable.ic_play_now)
-            PlayMusicActivity.musicService!!.showNotification(R.drawable.ic_play_now)
+            PlayMusicActivity.musicServiceSend!!.showNotification(R.drawable.ic_play_now)
         }
         _isPlaying.value = false
     }
 
     fun nextSong() {
         setSongPosition(true)
-        val listTracks = PlayMusicActivity.listTrack
-        val positionTrack = PlayMusicActivity.positionTrack
+        val listTracks = PlayMusicActivity.listTracksSend
+        val positionTrack = PlayMusicActivity.positionTrackSend
         listTracks?.get(positionTrack)?.let {
             AudioManger.getUriAudio(it) { uriAudio ->
                 uriAudio?.let { uri ->
-                    PlayMusicActivity.musicService?.let { service ->
+                    PlayMusicActivity.musicServiceSend?.let { service ->
                         service.mediaPlayer?.apply {
                             reset()
                             setDataSource(uri)
@@ -72,8 +72,8 @@ class NowPlayingViewModel : ViewModel() {
                 }
             }
         }
-        PlayMusicActivity.musicService?.showNotification(R.drawable.ic_pause_now)
+        PlayMusicActivity.musicServiceSend?.showNotification(R.drawable.ic_pause_now)
         updateCurrentTrack()
         playMusic()
-    }*/
+    }
 }

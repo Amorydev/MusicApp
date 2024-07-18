@@ -56,6 +56,12 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
     private val _musicService = MutableLiveData<MusicService?>()
     val musicService: LiveData<MusicService?> get() = _musicService
 
+    private val _listTrackResponse = MutableLiveData<List<Track>?>()
+    val listTrackResponse: LiveData<List<Track>?> get() = _listTrackResponse
+
+    private val _positionTrackResponse = MutableLiveData<Int?>()
+    val positionTrackResponse: LiveData<Int?> get() = _positionTrackResponse
+
 
     @SuppressLint("StaticFieldLeak")
     private var listTracks: List<Track>? = null
@@ -71,11 +77,14 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun onEvent(event: EventPostListTrack) {
         listTracks = event.listTrack
+        _listTrackResponse.value = listTracks
     }
 
     private fun updateTrack() {
         viewModelScope.launch {
             _track.value = listTracks!![positionTrack]
+            _positionTrackResponse.value = positionTrack
+            Log.d("PlayMusicViewModel", _positionTrackResponse.value.toString())
             loadBackgroundGradient()
         }
     }
@@ -135,6 +144,10 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
                     }
                 })
         }
+    }
+
+    fun updateIsPlaying(isPlaying: Boolean){
+        _isPlaying.value = isPlaying
     }
 
     fun setMusicService(service: MusicService) {

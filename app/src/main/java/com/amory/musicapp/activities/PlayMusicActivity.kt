@@ -28,6 +28,7 @@ import androidx.lifecycle.Observer
 
 import com.amory.musicapp.R
 import com.amory.musicapp.databinding.ActivityPlayMusicBinding
+import com.amory.musicapp.fragment.NowPlayingFragment.Companion.binding
 import com.amory.musicapp.model.Track
 
 import com.amory.musicapp.service.MusicService
@@ -38,12 +39,18 @@ import java.util.concurrent.Executors
 
 class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
     companion object {
-        var listTrack: List<Track>? = null
-        var positionTrack: Int = 0
+        @SuppressLint("StaticFieldLeak")
+        lateinit var binding: ActivityPlayMusicBinding
+        var isPlayingSend: Boolean = true
+        var trackSend: Track? = null
+        var musicServiceSend: MusicService? = null
+        var listTracksSend: List<Track>? = null
+        var positionTrackSend: Int = 0
     }
 
+    private var positionTrack: Int = 0
+
     private val viewModel: PlayMusicViewModel by viewModels()
-    private lateinit var binding: ActivityPlayMusicBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +66,7 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
 
         setupObservers()
         setupClickListeners()
+
     }
 
     private fun setupObservers() {
@@ -67,14 +75,14 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
                 binding.nameArtistTXT.text = it.artists.joinToString(", ") { artist -> artist.name }
                 binding.songNameTXT.text = it.name
                 Glide.with(binding.root).load(it.thumbnail).into(binding.imvTrack)
-                Log.d("hihi",track.toString())
             }
         })
 
         viewModel.isPlaying.observe(this, Observer { isPlaying ->
-            Log.d("isPlaying",isPlaying.toString())
+            Log.d("isPlaying", isPlaying.toString())
             isPlaying?.let {
-                binding.playImv.setImageResource(if (it) R.drawable.ic_pause_now else R.drawable.ic_play_now)
+                isPlayingSend = isPlaying
+                binding.playImv.setImageResource(if (it) R.drawable.ic_pause else R.drawable.ic_play)
                 if (it) {
                     onStartAnim()
                 } else {
@@ -118,6 +126,22 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
                 binding.root.background = it
             }
         })
+        viewModel.musicService.observe(this, Observer {
+            musicServiceSend = it
+        })
+
+        viewModel.listTrackResponse.observe(this, Observer {
+            listTracksSend = it
+        })
+
+        viewModel.positionTrackResponse.observe(this, Observer {
+            positionTrackSend = it!!
+        })
+
+        viewModel.track.observe(this, Observer {
+            trackSend = it
+        })
+
     }
 
     private fun setupClickListeners() {
@@ -129,8 +153,16 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         binding.playImv.setOnClickListener {
             if (viewModel.isPlaying.value == true) {
                 viewModel.pauseMusic()
+                isPlayingSend = false
+                viewModel.updateIsPlaying(false)
+                musicServiceSend?.showNotification(R.drawable.ic_play_now)
+                onStopAnim()
             } else {
                 viewModel.playMusic()
+                isPlayingSend = true
+                viewModel.updateIsPlaying(true)
+                musicServiceSend?.showNotification(R.drawable.ic_pause_now)
+                onStartAnim()
             }
         }
 
@@ -150,12 +182,12 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         val binder = service as MusicService.MyBinder
         val musicService = binder.currentService()
         viewModel.setMusicService(musicService)
+
         Executors.newSingleThreadExecutor().execute {
-/*
-            viewModel.musicService?.showNotification(R.drawable.ic_pause_now)
-*/
             runOnUiThread {
                 viewModel.setPositionTrack(positionTrack)
+                viewModel.updateIsPlaying(isPlayingSend)
+
             }
         }
     }

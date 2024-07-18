@@ -35,53 +35,53 @@ class MusicService : Service() {
             return this@MusicService
         }
     }
-   /* @SuppressLint("ForegroundServiceType")
-    fun showNotification(playBtn:Int){
+     @SuppressLint("ForegroundServiceType")
+     fun showNotification(playBtn:Int){
 
-        val preIntent = Intent(baseContext, NotificationReceiver::class.java).setAction(ApplicationClass.PREVIOUS)
-        val prePendingIntent = PendingIntent.getBroadcast(baseContext,0,preIntent,PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE)
+         val preIntent = Intent(baseContext, NotificationReceiver::class.java).setAction(ApplicationClass.PREVIOUS)
+         val prePendingIntent = PendingIntent.getBroadcast(baseContext,0,preIntent,PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE)
 
-        val nextIntent = Intent(baseContext, NotificationReceiver::class.java).setAction(ApplicationClass.NEXT)
-        val nextPendingIntent = PendingIntent.getBroadcast(baseContext,0,nextIntent,PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE)
+         val nextIntent = Intent(baseContext, NotificationReceiver::class.java).setAction(ApplicationClass.NEXT)
+         val nextPendingIntent = PendingIntent.getBroadcast(baseContext,0,nextIntent,PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE)
 
-        val playIntent = Intent(baseContext, NotificationReceiver::class.java).setAction(ApplicationClass.PLAY)
-        val playPendingIntent = PendingIntent.getBroadcast(baseContext,0,playIntent,PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE)
+         val playIntent = Intent(baseContext, NotificationReceiver::class.java).setAction(ApplicationClass.PLAY)
+         val playPendingIntent = PendingIntent.getBroadcast(baseContext,0,playIntent,PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE)
 
-        val exitIntent = Intent(baseContext, NotificationReceiver::class.java).setAction(ApplicationClass.EXIT)
-        val exitPendingIntent = PendingIntent.getBroadcast(baseContext,0,exitIntent,PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE)
+         val exitIntent = Intent(baseContext, NotificationReceiver::class.java).setAction(ApplicationClass.EXIT)
+         val exitPendingIntent = PendingIntent.getBroadcast(baseContext,0,exitIntent,PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE)
 
-        val track = PlayMusicActivity.listTrack!![PlayMusicActivity.positionTrack]
-        var artists = ""
-        for (i in 0 until track.artists.size){
-            artists = track.artists[i].name
-        }
-        Glide.with(baseContext)
-            .asBitmap()
-            .load(track.thumbnail)
-            .into(object : CustomTarget<Bitmap>(){
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    val notification = NotificationCompat.Builder(baseContext,ApplicationClass.CHANNEL_ID)
-                        .setContentTitle(track.name)
-                        .setContentText(artists)
-                        .setSmallIcon(R.drawable.ic_logo)
-                        .setLargeIcon(resource)
-                        .setStyle(androidx.media.app.NotificationCompat.MediaStyle().setMediaSession(mediaSession.sessionToken))
-                        .setPriority(NotificationCompat.PRIORITY_HIGH)
-                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                        .setOnlyAlertOnce(true)
-                        .addAction(R.drawable.ic_previous_music,"Previous",prePendingIntent)
-                        .addAction(playBtn,"Play",playPendingIntent)
-                        .addAction(R.drawable.ic_next_music,"Next",nextPendingIntent)
-                        .addAction(R.drawable.ic_exit,"Exit",exitPendingIntent)
-                        .build()
-                    startForeground(13,notification)
-                }
+         val track = PlayMusicActivity.trackSend
+         var artists = ""
+         for (i in 0 until track!!.artists.size){
+             artists = track.artists[i].name
+         }
+         Glide.with(baseContext)
+             .asBitmap()
+             .load(track.thumbnail)
+             .into(object : CustomTarget<Bitmap>(){
+                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                     val notification = NotificationCompat.Builder(baseContext,ApplicationClass.CHANNEL_ID)
+                         .setContentTitle(track.name)
+                         .setContentText(artists)
+                         .setSmallIcon(R.drawable.ic_logo)
+                         .setLargeIcon(resource)
+                         .setStyle(androidx.media.app.NotificationCompat.MediaStyle().setMediaSession(mediaSession.sessionToken))
+                         .setPriority(NotificationCompat.PRIORITY_HIGH)
+                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                         .setOnlyAlertOnce(true)
+                         .addAction(R.drawable.ic_previous_music,"Previous",prePendingIntent)
+                         .addAction(playBtn,"Play",playPendingIntent)
+                         .addAction(R.drawable.ic_next_music,"Next",nextPendingIntent)
+                         .addAction(R.drawable.ic_exit,"Exit",exitPendingIntent)
+                         .build()
+                     startForeground(13,notification)
+                 }
 
-                override fun onLoadCleared(placeholder: Drawable?) {
-                }
-            })
+                 override fun onLoadCleared(placeholder: Drawable?) {
+                 }
+             })
 
-    }*/
+     }
 
     override fun onDestroy() {
         super.onDestroy()

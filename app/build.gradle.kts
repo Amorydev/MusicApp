@@ -87,4 +87,6 @@ dependencies {
 
     //viewModel
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3")
+    implementation ("androidx.lifecycle:lifecycle-service:2.8.3")
+
 }

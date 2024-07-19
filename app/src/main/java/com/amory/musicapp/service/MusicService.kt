@@ -50,7 +50,7 @@ class MusicService : Service() {
          val exitIntent = Intent(baseContext, NotificationReceiver::class.java).setAction(ApplicationClass.EXIT)
          val exitPendingIntent = PendingIntent.getBroadcast(baseContext,0,exitIntent,PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE)
 
-         val track = PlayMusicActivity.trackSend
+         val track = PlayMusicActivity.listTracksSend?.get(PlayMusicActivity.positionTrackSend)
          var artists = ""
          for (i in 0 until track!!.artists.size){
              artists = track.artists[i].name

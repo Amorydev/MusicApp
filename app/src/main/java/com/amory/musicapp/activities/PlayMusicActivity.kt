@@ -1,9 +1,11 @@
 package com.amory.musicapp.activities
 
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.ServiceConnection
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
@@ -25,6 +27,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 
 import com.amory.musicapp.R
 import com.amory.musicapp.databinding.ActivityPlayMusicBinding
@@ -46,6 +49,7 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         var musicServiceSend: MusicService? = null
         var listTracksSend: List<Track>? = null
         var positionTrackSend: Int = 0
+        var instance: PlayMusicActivity? = null
     }
 
     private var positionTrack: Int = 0
@@ -57,12 +61,18 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         binding = ActivityPlayMusicBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+            updateIsPlayingReceiver,
+            IntentFilter("UPDATE_IS_PLAYING")
+        )
+
         positionTrack = intent.getIntExtra("positionTrack", 0)
         viewModel.setPositionTrack(positionTrack)
 
         val intent = Intent(this, MusicService::class.java)
         bindService(intent, this, BIND_AUTO_CREATE)
         startService(intent)
+
 
         setupObservers()
         setupClickListeners()
@@ -128,6 +138,12 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         })
         viewModel.musicService.observe(this, Observer {
             musicServiceSend = it
+            musicServiceSend?.mediaPlayer?.setOnPreparedListener {
+                onStartAnim()
+            }
+            musicServiceSend?.mediaPlayer?.setOnCompletionListener {
+                onStopAnim()
+            }
         })
 
         viewModel.listTrackResponse.observe(this, Observer {
@@ -138,9 +154,7 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
             positionTrackSend = it!!
         })
 
-        viewModel.track.observe(this, Observer {
-            trackSend = it
-        })
+
 
     }
 
@@ -153,14 +167,13 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         binding.playImv.setOnClickListener {
             if (viewModel.isPlaying.value == true) {
                 viewModel.pauseMusic()
-                isPlayingSend = false
-                viewModel.updateIsPlaying(false)
+                viewModel.updateIsPlaying(isPlayingSend)
                 musicServiceSend?.showNotification(R.drawable.ic_play_now)
                 onStopAnim()
             } else {
                 viewModel.playMusic()
                 isPlayingSend = true
-                viewModel.updateIsPlaying(true)
+                viewModel.updateIsPlaying(isPlayingSend)
                 musicServiceSend?.showNotification(R.drawable.ic_pause_now)
                 onStartAnim()
             }
@@ -218,9 +231,17 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         return String.format("%02d:%02d", minutes, seconds)
     }
 
+    private val updateIsPlayingReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val isPlaying = intent?.getBooleanExtra("isPlaying", false) ?: false
+            viewModel.updateIsPlaying(isPlaying)
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         unbindService(this)
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(updateIsPlayingReceiver)
     }
 
 }

@@ -12,6 +12,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.palette.graphics.Palette
 import com.amory.musicapp.R
 import com.amory.musicapp.activities.PlayMusicActivity
@@ -25,24 +26,27 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import kotlin.system.exitProcess
 
-class NotificationReceiver:BroadcastReceiver() {
+class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
-        when(intent?.action){
+        when (intent?.action) {
             ApplicationClass.PLAY -> {
-                if (PlayMusicActivity.isPlayingSend){
-                    pauseMusic()
-                }else{
-                    playMusic()
+                if (PlayMusicActivity.isPlayingSend) {
+                    pauseMusic(context)
+                } else {
+                    playMusic(context)
                 }
             }
+
             ApplicationClass.NEXT -> {
                 /*Toast.makeText(context,"Next clicker",Toast.LENGTH_SHORT).show()*/
-                nextOrPreviousMusic(false)
+                nextOrPreviousMusic(true, context)
             }
+
             ApplicationClass.PREVIOUS -> {
                 /*Toast.makeText(context,"Previous clicker",Toast.LENGTH_SHORT).show()*/
-                nextOrPreviousMusic(true)
+                nextOrPreviousMusic(false, context)
             }
+
             ApplicationClass.EXIT -> {
                 PlayMusicActivity.musicServiceSend?.stopForeground(true)
                 PlayMusicActivity.musicServiceSend = null
@@ -51,22 +55,25 @@ class NotificationReceiver:BroadcastReceiver() {
         }
     }
 
-    private fun playMusic(){
+    private fun playMusic(context: Context?) {
         PlayMusicActivity.isPlayingSend = true
         PlayMusicActivity.musicServiceSend!!.mediaPlayer!!.start()
         PlayMusicActivity.musicServiceSend!!.showNotification(R.drawable.ic_pause_now)
         PlayMusicActivity.binding.playImv.setImageResource(R.drawable.ic_pause)
         NowPlayingFragment.binding.imvPlay.setImageResource(R.drawable.ic_pause_now)
+        sendUpdateIsPlayingBroadcast(context, true)
     }
-    private fun pauseMusic(){
+
+    private fun pauseMusic(context: Context?) {
         PlayMusicActivity.isPlayingSend = false
         PlayMusicActivity.musicServiceSend!!.mediaPlayer!!.pause()
         PlayMusicActivity.musicServiceSend!!.showNotification(R.drawable.ic_play_now)
         PlayMusicActivity.binding.playImv.setImageResource(R.drawable.ic_play)
         NowPlayingFragment.binding.imvPlay.setImageResource(R.drawable.ic_play_now)
+        sendUpdateIsPlayingBroadcast(context, false)
     }
 
-    private fun nextOrPreviousMusic(increment: Boolean) {
+    private fun nextOrPreviousMusic(increment: Boolean, context: Context?) {
         setSongPosition(increment)
         val listTracks = PlayMusicActivity.listTracksSend
         val positionTrack = PlayMusicActivity.positionTrackSend
@@ -88,14 +95,23 @@ class NotificationReceiver:BroadcastReceiver() {
         }
         PlayMusicActivity.musicServiceSend?.showNotification(R.drawable.ic_pause_now)
         setLayout(listTracks, positionTrack)
-        playMusic()
+        playMusic(context)
     }
-    private fun setLayout(listTrack: List<Track>?, positionTrack: Int){
+
+    private fun sendUpdateIsPlayingBroadcast(context: Context?, isPlaying: Boolean) {
+        val intent = Intent("UPDATE_IS_PLAYING")
+        intent.putExtra("isPlaying", isPlaying)
+        LocalBroadcastManager.getInstance(context!!).sendBroadcast(intent)
+    }
+
+    private fun setLayout(listTrack: List<Track>?, positionTrack: Int) {
         listTrack.let { tracks ->
             tracks!![positionTrack].let {
-                PlayMusicActivity.binding.nameArtistTXT.text = it.artists.joinToString(", ") { artist -> artist.name }
+                PlayMusicActivity.binding.nameArtistTXT.text =
+                    it.artists.joinToString(", ") { artist -> artist.name }
                 PlayMusicActivity.binding.songNameTXT.text = it.name
-                Glide.with(PlayMusicActivity.binding.root).load(it.thumbnail).into(PlayMusicActivity.binding.imvTrack)
+                Glide.with(PlayMusicActivity.binding.root).load(it.thumbnail)
+                    .into(PlayMusicActivity.binding.imvTrack)
                 Glide.with(PlayMusicActivity.binding.root)
                     .asBitmap()
                     .load(listTrack!![positionTrack].thumbnail)
@@ -105,7 +121,8 @@ class NotificationReceiver:BroadcastReceiver() {
                             transition: Transition<in Bitmap>?
                         ) {
                             Palette.from(resource).generate { palette ->
-                                val dominantColor = palette?.dominantSwatch?.rgb ?: Color.TRANSPARENT
+                                val dominantColor =
+                                    palette?.dominantSwatch?.rgb ?: Color.TRANSPARENT
                                 val gradientDrawable = GradientDrawable().apply {
                                     shape = GradientDrawable.RECTANGLE
                                     colors = intArrayOf(dominantColor, 0xFF434343.toInt())

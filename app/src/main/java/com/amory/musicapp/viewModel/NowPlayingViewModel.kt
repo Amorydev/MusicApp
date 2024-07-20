@@ -17,9 +17,8 @@ class NowPlayingViewModel : ViewModel() {
     private var _isPlaying = MutableLiveData<Boolean>()
     val isPlaying: LiveData<Boolean> get() = _isPlaying
 
-    fun initialize() {
+    fun init(){
         updateCurrentTrack()
-        _isPlaying.value = PlayMusicActivity.isPlayingSend
     }
 
     private fun updateCurrentTrack() {
@@ -28,15 +27,18 @@ class NowPlayingViewModel : ViewModel() {
     }
 
     fun playOrPauseMusic() {
-        if (PlayMusicActivity.isPlayingSend) {
+        if (_isPlaying.value == true) {
             pauseMusic()
         } else {
             playMusic()
         }
     }
 
+    fun updateIsPlaying(isPlaying:Boolean){
+        _isPlaying.value = isPlaying
+    }
+
     private fun playMusic() {
-        PlayMusicActivity.isPlayingSend = true
         PlayMusicActivity.musicServiceSend?.mediaPlayer?.apply {
             start()
             binding.imvPlay.setImageResource(R.drawable.ic_pause_now)
@@ -46,7 +48,6 @@ class NowPlayingViewModel : ViewModel() {
     }
 
     private fun pauseMusic() {
-        PlayMusicActivity.isPlayingSend = false
         PlayMusicActivity.musicServiceSend?.mediaPlayer?.apply {
             pause()
             binding.imvPlay.setImageResource(R.drawable.ic_play_now)

@@ -45,11 +45,9 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         @SuppressLint("StaticFieldLeak")
         lateinit var binding: ActivityPlayMusicBinding
         var isPlayingSend: Boolean = true
-        var trackSend: Track? = null
         var musicServiceSend: MusicService? = null
         var listTracksSend: List<Track>? = null
         var positionTrackSend: Int = 0
-        var instance: PlayMusicActivity? = null
     }
 
     private var positionTrack: Int = 0
@@ -67,17 +65,83 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         )
 
         positionTrack = intent.getIntExtra("positionTrack", 0)
-        viewModel.setPositionTrack(positionTrack)
 
         val intent = Intent(this, MusicService::class.java)
         bindService(intent, this, BIND_AUTO_CREATE)
         startService(intent)
 
-
-        setupObservers()
-        setupClickListeners()
-
+        initView()
     }
+
+    private fun initView() {
+        Log.d("class",intent.getStringExtra("class").toString())
+        when (intent.getStringExtra("class")) {
+            "HomeFragment" -> {
+                setupObservers()
+                setupClickListeners()
+            }
+            "NowPlayingFragment" -> {
+                val currentPosition = intent.getIntExtra("currentPosition", 0)
+                viewModel.updateCurrentPosition(currentPosition)
+               /* setupObservers()*/
+                viewModel.musicService.observe(this, Observer { musicService ->
+                    musicService?.mediaPlayer?.seekTo(currentPosition)
+                    binding.seekBar.progress = currentPosition
+                    binding.seekBar.max = musicService?.mediaPlayer?.duration!!
+                })
+
+                viewModel.track.observe(this, Observer { track ->
+                    track?.let {
+                        binding.nameArtistTXT.text = it.artists.joinToString(", ") { artist -> artist.name }
+                        binding.songNameTXT.text = it.name
+                        Glide.with(binding.root).load(it.thumbnail).into(binding.imvTrack)
+                    }
+                })
+                viewModel.shuffle.observe(this, Observer { shuffle ->
+                    shuffle?.let {
+                        binding.shuffleBtn.backgroundTintList = ColorStateList.valueOf(
+                            ContextCompat.getColor(this, if (it) R.color.primary else R.color.white)
+                        )
+                    }
+                })
+
+                viewModel.repeat.observe(this, Observer { repeat ->
+                    repeat?.let {
+                        binding.repeatBtn.backgroundTintList = ColorStateList.valueOf(
+                            ContextCompat.getColor(this, if (it) R.color.primary else R.color.white)
+                        )
+                    }
+                })
+
+                viewModel.duration.observe(this, Observer { duration ->
+                    duration?.let {
+                        binding.seekBar.max = it
+                        binding.endDurationTXT.text = formatTime(it.toLong())
+                    }
+                })
+
+                viewModel.backgroundGradient.observe(this, Observer { gradientDrawable ->
+                    gradientDrawable?.let {
+                        binding.root.background = it
+                    }
+                })
+
+                viewModel.isPlaying.observe(this, Observer { isPlaying ->
+                    if (isPlaying == true){
+                        binding.playImv.setImageResource(R.drawable.ic_pause_now)
+                        onStartAnim()
+                        viewModel.playMusic()
+                    }else{
+                        binding.playImv.setImageResource(R.drawable.ic_play_now)
+                        viewModel.pauseMusic()
+                        onStopAnim()
+                    }
+                })
+                setupClickListeners()
+            }
+        }
+    }
+
 
     private fun setupObservers() {
         viewModel.track.observe(this, Observer { track ->
@@ -87,9 +151,15 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
                 Glide.with(binding.root).load(it.thumbnail).into(binding.imvTrack)
             }
         })
+        viewModel.currentPosition.observe(this, Observer { currentPosition ->
+            currentPosition?.let {
+                binding.seekBar.progress = it
+                binding.startDurationTXT.text = formatTime(it.toLong())
+            }
+        })
 
         viewModel.isPlaying.observe(this, Observer { isPlaying ->
-            Log.d("isPlaying", isPlaying.toString())
+            Log.d("isPlaying", "PlayMusic isPlaying $isPlaying")
             isPlaying?.let {
                 isPlayingSend = isPlaying
                 binding.playImv.setImageResource(if (it) R.drawable.ic_pause else R.drawable.ic_play)
@@ -117,13 +187,6 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
             }
         })
 
-        viewModel.currentPosition.observe(this, Observer { currentPosition ->
-            currentPosition?.let {
-                binding.seekBar.progress = it
-                binding.startDurationTXT.text = formatTime(it.toLong())
-            }
-        })
-
         viewModel.duration.observe(this, Observer { duration ->
             duration?.let {
                 binding.seekBar.max = it
@@ -138,12 +201,6 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         })
         viewModel.musicService.observe(this, Observer {
             musicServiceSend = it
-            musicServiceSend?.mediaPlayer?.setOnPreparedListener {
-                onStartAnim()
-            }
-            musicServiceSend?.mediaPlayer?.setOnCompletionListener {
-                onStopAnim()
-            }
         })
 
         viewModel.listTrackResponse.observe(this, Observer {
@@ -153,7 +210,6 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         viewModel.positionTrackResponse.observe(this, Observer {
             positionTrackSend = it!!
         })
-
 
 
     }
@@ -199,8 +255,6 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         Executors.newSingleThreadExecutor().execute {
             runOnUiThread {
                 viewModel.setPositionTrack(positionTrack)
-                viewModel.updateIsPlaying(isPlayingSend)
-
             }
         }
     }

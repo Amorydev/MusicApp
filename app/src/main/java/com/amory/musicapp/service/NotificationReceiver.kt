@@ -56,7 +56,6 @@ class NotificationReceiver : BroadcastReceiver() {
     }
 
     private fun playMusic(context: Context?) {
-        PlayMusicActivity.isPlayingSend = true
         PlayMusicActivity.musicServiceSend!!.mediaPlayer!!.start()
         PlayMusicActivity.musicServiceSend!!.showNotification(R.drawable.ic_pause_now)
         PlayMusicActivity.binding.playImv.setImageResource(R.drawable.ic_pause)
@@ -65,7 +64,6 @@ class NotificationReceiver : BroadcastReceiver() {
     }
 
     private fun pauseMusic(context: Context?) {
-        PlayMusicActivity.isPlayingSend = false
         PlayMusicActivity.musicServiceSend!!.mediaPlayer!!.pause()
         PlayMusicActivity.musicServiceSend!!.showNotification(R.drawable.ic_play_now)
         PlayMusicActivity.binding.playImv.setImageResource(R.drawable.ic_play)

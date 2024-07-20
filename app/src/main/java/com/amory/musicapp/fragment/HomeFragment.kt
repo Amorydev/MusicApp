@@ -106,6 +106,7 @@ class HomeFragment : Fragment() {
                 override fun onCLickTrack(position: Int) {
                     EventBus.getDefault().postSticky(EventPostListTrack(itemTrack))
                     val intent = Intent(requireContext(), PlayMusicActivity::class.java)
+                    intent.putExtra("class", "HomeFragment")
                     intent.putExtra("positionTrack", position)
                     startActivity(intent)
                 }

@@ -120,6 +120,7 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
         playTrack()
     }
 
+
     private fun loadBackgroundGradient() {
         listTracks?.let { track ->
             Glide.with(getApplication<Application>().applicationContext)
@@ -186,12 +187,15 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
             }
         }
     }
+    fun updateCurrentPosition(position: Int){
+        _currentPosition.value = position
+    }
 
     private fun createMediaPlayer(uriAudio: Uri?) {
         viewModelScope.launch(Dispatchers.Main) {
             try {
-                _musicService.value?.mediaPlayer?.reset()  // Reset existing MediaPlayer instance if any
                 _musicService.value?.mediaPlayer = MediaPlayer().apply {
+                    reset()
                     setDataSource(getApplication<Application>().applicationContext, uriAudio!!)
                     setOnPreparedListener {
                         _isPlaying.value = true
@@ -208,7 +212,7 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    private fun startSeekBarUpdate() {
+     private fun startSeekBarUpdate() {
         handler.postDelayed(object : Runnable {
             override fun run() {
                 _musicService.value?.mediaPlayer?.let {

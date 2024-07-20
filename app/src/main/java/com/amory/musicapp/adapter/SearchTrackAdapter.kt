@@ -1,5 +1,6 @@
 package com.amory.musicapp.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -21,6 +22,7 @@ class SearchTrackAdapter(private val listTrack: List<Track>, private val onCLick
             Glide.with(binding.root).load(data.thumbnail).into(binding.imvTrackImage)
         }
     }
+    @SuppressLint("DefaultLocale")
     fun formatSecondsToMinutesAndSeconds(seconds: Int): String {
         val minutes = seconds / 60
         val remainingSeconds = seconds % 60

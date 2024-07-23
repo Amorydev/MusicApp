@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.amory.musicapp.R
 import com.amory.musicapp.activities.PlayMusicActivity
-import com.amory.musicapp.fragment.NowPlayingFragment.Companion.binding
 import com.amory.musicapp.managers.AudioManger
 import com.amory.musicapp.managers.PositionSongManger.setSongPosition
 import com.amory.musicapp.model.Track
@@ -17,7 +16,7 @@ class NowPlayingViewModel : ViewModel() {
     private var _isPlaying = MutableLiveData<Boolean>()
     val isPlaying: LiveData<Boolean> get() = _isPlaying
 
-    fun init(){
+    fun init() {
         updateCurrentTrack()
     }
 
@@ -34,14 +33,13 @@ class NowPlayingViewModel : ViewModel() {
         }
     }
 
-    fun updateIsPlaying(isPlaying:Boolean){
+    fun updateIsPlaying(isPlaying: Boolean) {
         _isPlaying.value = isPlaying
     }
 
     private fun playMusic() {
         PlayMusicActivity.musicServiceSend?.mediaPlayer?.apply {
             start()
-            binding.imvPlay.setImageResource(R.drawable.ic_pause_now)
             PlayMusicActivity.musicServiceSend!!.showNotification(R.drawable.ic_pause_now)
         }
         _isPlaying.value = true
@@ -50,7 +48,6 @@ class NowPlayingViewModel : ViewModel() {
     private fun pauseMusic() {
         PlayMusicActivity.musicServiceSend?.mediaPlayer?.apply {
             pause()
-            binding.imvPlay.setImageResource(R.drawable.ic_play_now)
             PlayMusicActivity.musicServiceSend!!.showNotification(R.drawable.ic_play_now)
         }
         _isPlaying.value = false

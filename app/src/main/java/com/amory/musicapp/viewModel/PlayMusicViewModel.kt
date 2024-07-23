@@ -195,7 +195,6 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch(Dispatchers.Main) {
             try {
                 _musicService.value?.mediaPlayer = MediaPlayer().apply {
-                    reset()
                     setDataSource(getApplication<Application>().applicationContext, uriAudio!!)
                     setOnPreparedListener {
                         _isPlaying.value = true

@@ -16,7 +16,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.palette.graphics.Palette
 import com.amory.musicapp.R
 import com.amory.musicapp.activities.PlayMusicActivity
-import com.amory.musicapp.fragment.NowPlayingFragment
 import com.amory.musicapp.managers.PositionSongManger.setSongPosition
 import com.amory.musicapp.managers.AudioManger
 import com.amory.musicapp.model.Track
@@ -30,7 +29,7 @@ class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         when (intent?.action) {
             ApplicationClass.PLAY -> {
-                if (PlayMusicActivity.isPlayingSend) {
+                if (PlayMusicActivity._isPlaying) {
                     pauseMusic(context)
                 } else {
                     playMusic(context)
@@ -59,7 +58,6 @@ class NotificationReceiver : BroadcastReceiver() {
         PlayMusicActivity.musicServiceSend!!.mediaPlayer!!.start()
         PlayMusicActivity.musicServiceSend!!.showNotification(R.drawable.ic_pause_now)
         PlayMusicActivity.binding.playImv.setImageResource(R.drawable.ic_pause)
-        NowPlayingFragment.binding.imvPlay.setImageResource(R.drawable.ic_pause_now)
         sendUpdateIsPlayingBroadcast(context, true)
     }
 
@@ -67,7 +65,6 @@ class NotificationReceiver : BroadcastReceiver() {
         PlayMusicActivity.musicServiceSend!!.mediaPlayer!!.pause()
         PlayMusicActivity.musicServiceSend!!.showNotification(R.drawable.ic_play_now)
         PlayMusicActivity.binding.playImv.setImageResource(R.drawable.ic_play)
-        NowPlayingFragment.binding.imvPlay.setImageResource(R.drawable.ic_play_now)
         sendUpdateIsPlayingBroadcast(context, false)
     }
 

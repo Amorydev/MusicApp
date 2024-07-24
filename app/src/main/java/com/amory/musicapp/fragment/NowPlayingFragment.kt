@@ -49,7 +49,7 @@ class NowPlayingFragment : Fragment() {
             binding.nameArtistTXT.text = track?.artists?.joinToString(", ") { it.name }
             Glide.with(binding.root).load(track?.thumbnail).into(binding.imvTrack)
         }
-        nowPlayingViewModel.updateIsPlaying(PlayMusicActivity._isPlaying)
+        PlayMusicActivity._isPlaying?.let { nowPlayingViewModel.updateIsPlaying(it) }
         nowPlayingViewModel.isPlaying.observe(viewLifecycleOwner) { isPlaying ->
             Log.d("isPlayingNow", isPlaying.toString())
             binding.imvPlay.setImageResource(

@@ -159,26 +159,30 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
     fun playMusic() {
         Log.d("PlayMusicViewModel", "playMusic called, isPlaying: ${_isPlaying.value}")
         _musicService.value?.mediaPlayer?.let {
-            if (!it.isPlaying) {
                 _isPlaying.value = true
                 startSeekBarUpdate()
                 it.start()
-            }
         }
     }
 
     fun pauseMusic() {
         Log.d("PlayMusicViewModel", "pauseMusic called, isPlaying: ${_isPlaying.value}")
         _musicService.value?.mediaPlayer?.let {
-            if (it.isPlaying) {
                 _isPlaying.value = false
                 stopSeekBarUpdate()
                 it.pause()
-            }
+        }
+    }
+    fun playMusicIfNotPlaying() {
+        if (_isPlaying.value == false) {
+            playMusic()
         }
     }
 
     private fun playTrack() {
+        if (_musicService.value?.mediaPlayer?.isPlaying == true) {
+            return
+        }
         viewModelScope.launch(Dispatchers.IO) {
             val track = listTracks!![positionTrack] ?: return@launch
             getUriAudio(track) { uri ->
@@ -195,6 +199,7 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch(Dispatchers.Main) {
             try {
                 _musicService.value?.mediaPlayer = MediaPlayer().apply {
+                    reset()
                     setDataSource(getApplication<Application>().applicationContext, uriAudio!!)
                     setOnPreparedListener {
                         _isPlaying.value = true
@@ -211,7 +216,7 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-     private fun startSeekBarUpdate() {
+      fun startSeekBarUpdate() {
         handler.postDelayed(object : Runnable {
             override fun run() {
                 _musicService.value?.mediaPlayer?.let {

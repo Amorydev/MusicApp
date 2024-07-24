@@ -29,7 +29,7 @@ class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         when (intent?.action) {
             ApplicationClass.PLAY -> {
-                if (PlayMusicActivity._isPlaying) {
+                if (PlayMusicActivity._isPlaying == true) {
                     pauseMusic(context)
                 } else {
                     playMusic(context)

@@ -37,7 +37,7 @@ class HomeViewModel:ViewModel() {
      private fun getPopularTracks() {
        viewModelScope.launch {
            TrackManager.getTrack(1, 10) { track ->
-               _itemTrack.postValue(track)
+               _itemTrack.postValue(track as MutableList<Track>?)
                Log.d("tracks", track.toString())
            }
        }

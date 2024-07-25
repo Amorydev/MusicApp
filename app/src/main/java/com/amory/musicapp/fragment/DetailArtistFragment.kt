@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.amory.musicapp.Interface.OnCLickTrack
 import com.amory.musicapp.R
@@ -16,6 +17,7 @@ import com.amory.musicapp.model.Track
 import com.amory.musicapp.model.TrackResponse
 import com.amory.musicapp.retrofit.APICallArtists
 import com.amory.musicapp.retrofit.RetrofitClient
+import com.amory.musicapp.viewModel.DetailArtistViewModel
 import com.bumptech.glide.Glide
 import com.google.android.material.appbar.AppBarLayout
 import retrofit2.Call
@@ -25,7 +27,8 @@ import retrofit2.Response
 class DetailArtistFragment : Fragment() {
     private var _binding: FragmentDetailArtistBinding? = null
     private val binding get() = _binding!!
-    private lateinit var artist:Artists
+    private lateinit var artist: Artists
+    private val viewModel: DetailArtistViewModel by viewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -67,31 +70,31 @@ class DetailArtistFragment : Fragment() {
     private fun initViews() {
         artist = arguments?.getSerializable("selectedArtist") as Artists
         Log.d("artist", artist.toString())
-        binding.nameArtistTXT.text = artist.name
-        Glide.with(binding.root).load(artist.thumbnail).into(binding.profileArtistImv)
-        showRv(artist)
+        viewModel.setArtist(artist)
+        viewModel.getTracks(artist.id)
+        observers()
     }
 
-    private fun showRv(artists: Artists) {
-        val service = RetrofitClient.retrofitInstance.create(APICallArtists::class.java)
-        val call = service.getTrackOfArtist(artists.id, 1, 10)
-        call.enqueue(object : Callback<TrackResponse> {
-            override fun onResponse(call: Call<TrackResponse>, response: Response<TrackResponse>) {
-                val listTracks: MutableList<Track> = response.body()?.items!!
-                val adapter = PopularTrackAdapter(listTracks, object : OnCLickTrack{
-                    override fun onCLickTrack(position: Int) {
+    private fun observers() {
+        viewModel.artist.observe(viewLifecycleOwner) {
+            binding.nameArtistTXT.text = it?.name
+            Glide.with(binding.root).load(it?.thumbnail).into(binding.profileArtistImv)
+        }
+        viewModel.tracks.observe(viewLifecycleOwner) { tracks ->
+            setRecyclerviewTracks(tracks as MutableList<Track>)
+        }
+    }
 
-                    }
-                })
-                binding.detailArtistRV.adapter = adapter
-                binding.detailArtistRV.layoutManager =
-                    LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-                binding.detailArtistRV.setHasFixedSize(true)
-            }
+    private fun setRecyclerviewTracks(tracks: MutableList<Track>) {
+        val adapter = PopularTrackAdapter(tracks, object : OnCLickTrack {
+            override fun onCLickTrack(position: Int) {
 
-            override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
-                TODO("Not yet implemented")
             }
         })
+        binding.detailArtistRV.adapter = adapter
+        binding.detailArtistRV.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.detailArtistRV.setHasFixedSize(true)
     }
+
 }

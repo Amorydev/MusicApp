@@ -25,7 +25,6 @@ import com.amory.musicapp.service.MusicService
 import com.amory.musicapp.viewModel.PlayMusicViewModel
 import com.bumptech.glide.Glide
 
-import java.util.concurrent.Executors
 
 class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
 
@@ -70,6 +69,8 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
             "HomeFragment" -> {
                 setupObservers()
                 setupClickListeners()
+                viewModel.setTrackChangedFromHome(true)
+                viewModel.setPositionTrack(positionTrack)
                 viewModel.playMusicIfNotPlaying()
             }
 
@@ -80,21 +81,22 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
                 viewModel.musicService.observe(this, Observer { musicService ->
                     binding.startDurationTXT.text =
                         musicService?.mediaPlayer?.currentPosition?.toLong()?.let { formatTime(it) }
-                    binding.endDurationTXT.text = musicService?.mediaPlayer?.duration?.toLong()?.let { formatTime(it) }
+                    binding.endDurationTXT.text =
+                        musicService?.mediaPlayer?.duration?.toLong()?.let { formatTime(it) }
                     binding.seekBar.progress = musicService?.mediaPlayer?.currentPosition!!
                     binding.seekBar.max = musicService.mediaPlayer?.duration!!
                     musicService.mediaPlayer?.seekTo(currentPosition)
                 })
-                setupObservers()
-                setupClickListeners()
-                if (_isPlaying == true){
+                if (_isPlaying == true) {
                     binding.playImv.setImageResource(R.drawable.ic_pause)
                     viewModel.playMusic()
                     viewModel.startSeekBarUpdate()
-                }else{
+                } else {
                     binding.playImv.setImageResource(R.drawable.ic_play)
                     viewModel.pauseMusic()
                 }
+                setupObservers()
+                setupClickListeners()
             }
         }
     }
@@ -119,9 +121,9 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
             isPlaying?.let {
                 binding.playImv.setImageResource(if (it) R.drawable.ic_pause else R.drawable.ic_play)
                 if (it) {
-                    onStartAnim()
+                    musicServiceSend?.showNotification(R.drawable.ic_pause_now)
                 } else {
-                    onStopAnim()
+                    musicServiceSend?.showNotification(R.drawable.ic_play_now)
                 }
             }
         })
@@ -157,6 +159,11 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
 
         viewModel.musicService.observe(this, Observer {
             musicServiceSend = it
+            if (it?.mediaPlayer?.isPlaying == true) {
+                onStartAnim()
+            } else {
+                onStopAnim()
+            }
         })
 
         viewModel.listTrackResponse.observe(this, Observer {
@@ -177,11 +184,9 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         binding.playImv.setOnClickListener {
             if (viewModel.isPlaying.value == true) {
                 viewModel.pauseMusic()
-                musicServiceSend?.showNotification(R.drawable.ic_play_now)
                 onStopAnim()
             } else {
                 viewModel.playMusic()
-                musicServiceSend?.showNotification(R.drawable.ic_pause_now)
                 onStartAnim()
             }
         }
@@ -202,12 +207,6 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         val binder = service as MusicService.MyBinder
         val musicService = binder.currentService()
         viewModel.setMusicService(musicService)
-
-        Executors.newSingleThreadExecutor().execute {
-            runOnUiThread {
-                viewModel.setPositionTrack(positionTrack)
-            }
-        }
     }
 
     override fun onServiceDisconnected(name: ComponentName?) {

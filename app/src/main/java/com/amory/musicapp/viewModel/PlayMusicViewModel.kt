@@ -62,6 +62,10 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
     private val _positionTrackResponse = MutableLiveData<Int?>()
     val positionTrackResponse: LiveData<Int?> get() = _positionTrackResponse
 
+    private val _uri = MutableLiveData<Uri?>()
+    val uri : LiveData<Uri?> get() = _uri
+
+    private var isTrackChangedFromHome: Boolean = false
 
     @SuppressLint("StaticFieldLeak")
     private var listTracks: List<Track>? = null
@@ -78,6 +82,10 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
     fun onEvent(event: EventPostListTrack) {
         listTracks = event.listTrack
         _listTrackResponse.value = listTracks
+    }
+
+    fun setTrackChangedFromHome(isChanged: Boolean) {
+        isTrackChangedFromHome = isChanged
     }
 
     private fun updateTrack() {
@@ -180,13 +188,15 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     private fun playTrack() {
-        if (_musicService.value?.mediaPlayer?.isPlaying == true) {
+        if (_musicService.value?.mediaPlayer?.isPlaying == true && !isTrackChangedFromHome) {
             return
         }
+        isTrackChangedFromHome = false  // Reset flag after use
         viewModelScope.launch(Dispatchers.IO) {
             val track = listTracks!![positionTrack] ?: return@launch
             getUriAudio(track) { uri ->
                 val uriAudio = Uri.parse(uri)
+                _uri.value = uriAudio
                 createMediaPlayer(uriAudio)
             }
         }
@@ -198,6 +208,7 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
     private fun createMediaPlayer(uriAudio: Uri?) {
         viewModelScope.launch(Dispatchers.Main) {
             try {
+                _musicService.value?.mediaPlayer?.reset()
                 _musicService.value?.mediaPlayer = MediaPlayer().apply {
                     reset()
                     setDataSource(getApplication<Application>().applicationContext, uriAudio!!)

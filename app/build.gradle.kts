@@ -86,13 +86,14 @@ dependencies {
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
     //viewModel
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3")
-    implementation ("androidx.lifecycle:lifecycle-service:2.8.3")
-    implementation ("androidx.activity:activity-ktx:1.9.0")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
+    implementation ("androidx.lifecycle:lifecycle-service:2.8.4")
+    implementation ("androidx.activity:activity-ktx:1.9.1")
 
     //LiveData
-    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.8.3")
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.8.4")
     //Fragment
-    implementation ("androidx.fragment:fragment-ktx:1.8.1")
+    implementation ("androidx.fragment:fragment-ktx:1.8.2")
+
 
 }

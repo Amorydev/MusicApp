@@ -2,6 +2,7 @@ package com.amory.musicapp.managers
 
 import android.util.Log
 import com.amory.musicapp.model.AddPlaylistResponse
+import com.amory.musicapp.model.DetailPlaylistResponse
 import com.amory.musicapp.model.Playlist
 import com.amory.musicapp.model.PlaylistResponse
 import com.amory.musicapp.retrofit.APICallPlaylist
@@ -38,9 +39,9 @@ object PlaylistManager {
         })
     }
 
-    fun getPlaylist(page: Int, size: Int, callback: (MutableList<Playlist>) -> Unit) {
-        val callPlaylistMe = service.getPlaylist(page,size)
-        callPlaylistMe.enqueue(object : Callback<PlaylistResponse>{
+    fun getAllPlaylist(page: Int, size: Int, callback: (MutableList<Playlist>) -> Unit) {
+        val callPlaylistMe = service.getAllPlaylist(page, size)
+        callPlaylistMe.enqueue(object : Callback<PlaylistResponse> {
             override fun onFailure(call: Call<PlaylistResponse>, t: Throwable) {
             }
 
@@ -48,11 +49,30 @@ object PlaylistManager {
                 call: Call<PlaylistResponse>,
                 response: Response<PlaylistResponse>
             ) {
-               if (response.isSuccessful){
-                   val listPlaylist = response.body()?.items
-                   callback(listPlaylist!!)
-               }
+                if (response.isSuccessful) {
+                    val listPlaylist = response.body()?.items
+                    callback(listPlaylist!!)
+                }
             }
         })
     }
+
+    fun getPlaylistById(id: String, callback: (DetailPlaylistResponse?) -> Unit) {
+        val callPlaylistById = service.getPlaylistById(id)
+        callPlaylistById.enqueue(object : Callback<DetailPlaylistResponse> {
+            override fun onFailure(call: Call<DetailPlaylistResponse>, t: Throwable) {
+            }
+
+            override fun onResponse(
+                call: Call<DetailPlaylistResponse>,
+                response: Response<DetailPlaylistResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val value = response.body()
+                    callback(value)
+                }
+            }
+        })
+    }
+
 }

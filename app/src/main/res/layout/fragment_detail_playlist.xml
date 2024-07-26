@@ -130,6 +130,17 @@
                         app:layout_constraintEnd_toEndOf="@+id/linearLayout8"
                         app:layout_constraintStart_toStartOf="@+id/linearLayout8"
                         app:layout_constraintTop_toBottomOf="@+id/linearLayout8" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/addMusicBtn"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:background="@color/primary"
+                        android:text="Thêm bài hát"
+                        android:layout_marginTop="10dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/totalItemPlaylistTxt" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout

@@ -60,6 +60,10 @@ class LibraryFragment : Fragment() {
             override fun onClickItemPlaylist(position: Int) {
                 val fragment = DetailPlaylistFragment()
 
+                val bundle = Bundle()
+                bundle.putString("namePlaylist",listPlaylist[position].name)
+                fragment.arguments = bundle
+
                 requireActivity().supportFragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, fragment)
                     .addToBackStack(null)

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background_color_main"
     tools:context=".fragment.DetailPlaylistFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -32,6 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginStart="10dp"
+                android:textColor="@color/white"
                 android:text="Nhạc của tôi"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -43,7 +45,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="180dp"
                 android:background="@drawable/ic_more"
-                android:backgroundTint="@color/black" />
+               />
         </LinearLayout>
 
         <androidx.core.widget.NestedScrollView
@@ -81,11 +83,12 @@
                     </androidx.cardview.widget.CardView>
 
                     <TextView
-                        android:id="@+id/textView7"
+                        android:id="@+id/namePlaylistTxt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:text="Nhạc hay nè"
+                        android:textColor="@color/white"
                         android:textSize="20dp"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -95,19 +98,19 @@
                     <LinearLayout
                         android:id="@+id/linearLayout8"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="25dp"
                         android:layout_marginTop="5dp"
-                        app:layout_constraintEnd_toEndOf="@+id/textView7"
-                        app:layout_constraintStart_toStartOf="@+id/textView7"
-                        app:layout_constraintTop_toBottomOf="@+id/textView7"
+                        app:layout_constraintEnd_toEndOf="@+id/namePlaylistTxt"
+                        app:layout_constraintStart_toStartOf="@+id/namePlaylistTxt"
+                        app:layout_constraintTop_toBottomOf="@+id/namePlaylistTxt"
                         tools:ignore="UseCompoundDrawables">
 
                         <ImageView
                             android:id="@+id/isPublicImv"
-                            android:layout_width="25dp"
-                            android:layout_height="25dp"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
                             android:layout_gravity="center"
-                            android:background="@drawable/ic_public" />
+                            android:src="@drawable/ic_public" />
 
                         <TextView
                             android:id="@+id/nameArtistPlaylist"
@@ -115,6 +118,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_marginStart="10dp"
+                            android:textColor="@color/white"
                             android:text="Nguyễn Đức Quyền"
                             app:layout_constraintBottom_toBottomOf="@+id/isPublicImv"
                             app:layout_constraintStart_toEndOf="@+id/isPublicImv"
@@ -127,6 +131,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
                         android:text="0 bài hát"
+                        android:textColor="@color/white"
                         app:layout_constraintEnd_toEndOf="@+id/linearLayout8"
                         app:layout_constraintStart_toStartOf="@+id/linearLayout8"
                         app:layout_constraintTop_toBottomOf="@+id/linearLayout8" />
@@ -174,7 +179,6 @@
                         android:layout_height="30dp"
                         android:layout_marginEnd="10dp"
                         android:background="@drawable/ic_shuffle"
-                        android:backgroundTint="@color/black"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/playBtn"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -185,7 +189,6 @@
                         android:layout_height="30dp"
                         android:layout_marginEnd="20dp"
                         android:background="@drawable/ic_play"
-                        android:backgroundTint="@color/black"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />

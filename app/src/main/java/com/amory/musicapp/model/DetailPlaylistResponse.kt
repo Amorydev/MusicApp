@@ -7,8 +7,8 @@ data class DetailPlaylistResponse(
     val thumbnail: String,
     val description: String,
     val isPublic: Boolean,
-    val owner: OwnerPlaylist,
+    val owner: Owner,
     val totalLikes: Int,
     val items: List<Track>,
-    val scopePermissions: ScopePermissionRequest
+    val scopePermissions: List<ScopePermissionRequest>
 )

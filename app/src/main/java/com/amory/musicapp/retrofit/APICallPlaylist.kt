@@ -28,7 +28,7 @@ interface APICallPlaylist {
         @Query("size") size: Int
     ): Call<PlaylistResponse>
 
-    @POST("v1/playlists/{id}")
+    @GET("v1/playlists/{id}")
     fun getPlaylistById(
         @Path("id") id: String
     ): Call<DetailPlaylistResponse>

@@ -1,6 +1,6 @@
 package com.amory.musicapp.model
 
-data class OwnerPlaylist(
+data class Owner(
     val id: String,
     val urn: String,
     val firstName: String,

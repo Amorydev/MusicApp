@@ -98,6 +98,9 @@ class MainActivity : AppCompatActivity() {
                     replaceFragment(HomeFragment())
                     true
                 }
+                R.id.search ->{
+                    true
+                }
 
                 R.id.library -> {
                     replaceFragment(LibraryFragment())

@@ -5,6 +5,10 @@
         android:title="Trang chủ"
         android:icon="@drawable/ic_home"
         tools:ignore="HardcodedText" />
+    <item android:id="@+id/search"
+        android:title="Tìm kiếm"
+        android:icon="@drawable/ic_search_main"
+        tools:ignore="HardcodedText" />
     <item android:id="@+id/library"
         android:title="Thư viện"
         android:icon="@drawable/ic_library"

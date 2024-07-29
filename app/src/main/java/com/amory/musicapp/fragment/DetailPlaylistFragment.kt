@@ -42,6 +42,18 @@ class DetailPlaylistFragment : Fragment() {
             Toast.makeText(requireContext(), "Playlist name is null", Toast.LENGTH_SHORT).show()
             Log.e("DetailPlaylistFragment", "Playlist name is null")
         }
+        onCLickAddMusic()
+    }
+
+    private fun onCLickAddMusic() {
+        binding.addMusicBtn.setOnClickListener {
+            val fragment = AddItemInPlaylistFragment()
+
+            requireActivity().supportFragmentManager.beginTransaction()
+                .addToBackStack(null)
+                .replace(R.id.fragment_container,fragment)
+                .commit()
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -52,11 +64,11 @@ class DetailPlaylistFragment : Fragment() {
         viewModel.items.observe(viewLifecycleOwner) { items ->
             Log.d("DetailPlaylistFragment", "Number of items: ${items.size}")
             binding.totalItemPlaylistTxt.text = "${items.size} bài hát"
-            if (items.isNotEmpty()){
+           /* if (items.isNotEmpty()){
                 binding.addMusicBtn.visibility = View.VISIBLE
             }else{
                 binding.addMusicBtn.visibility = View.INVISIBLE
-            }
+            }*/
         }
         viewModel.isPublic.observe(viewLifecycleOwner) { isPublic ->
             if (isPublic == true) binding.isPublicImv.setImageResource(R.drawable.ic_profile) else binding.isPublicImv.setImageResource(

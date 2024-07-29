@@ -29,6 +29,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
+                android:focusableInTouchMode="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20sp"
@@ -63,13 +64,14 @@
                     android:layout_marginStart="10dp"
                     android:background="@drawable/ic_search" />
 
-                <TextView
+                <EditText
                     android:id="@+id/searchItemTXT"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:background="@android:color/transparent"
                     android:layout_marginStart="10dp"
-                    android:text="Tìm kiếm bài hát"
+                    android:hint="Tìm kiếm bài hát"
                     android:textSize="15sp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>

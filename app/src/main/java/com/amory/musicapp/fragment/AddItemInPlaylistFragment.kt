@@ -27,6 +27,8 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody
 
 class AddItemInPlaylistFragment : Fragment() {
     private var _binding: FragmentAddItemInPlaylistBinding? = null
@@ -52,7 +54,7 @@ class AddItemInPlaylistFragment : Fragment() {
             setUpRecyclerViewSearchResult(lisTrackTemp)
         }
         viewModel.listTracks.observe(viewLifecycleOwner) { listTracks ->
-                setUpRecyclerViewSearchResult(listTracks)
+            setUpRecyclerViewSearchResult(listTracks)
         }
     }
 
@@ -60,6 +62,18 @@ class AddItemInPlaylistFragment : Fragment() {
         val adapter = AddItemInPlaylistAdapter(listTracks!!, object : OnClickBtnAddMusicInPlaylist {
             override fun onClickBtnAddMusicInPlaylist(position: Int) {
                 Toast.makeText(requireContext(), "add music click", Toast.LENGTH_SHORT).show()
+                val id = arguments?.getString("id")
+                val idTrack = listTracks[position]?.urn?.let {
+                    RequestBody.create(
+                        "text/plain".toMediaTypeOrNull(),
+                        it
+                    )
+                }
+                id?.let {
+                    if (idTrack != null) {
+                        viewModel.addItemInPlayList(it, idTrack)
+                    }
+                }
             }
         })
         binding.tracksRv.adapter = adapter

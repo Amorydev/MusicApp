@@ -16,6 +16,9 @@ class DetailPlaylistViewModel : ViewModel() {
     private val _name = MutableLiveData<String?>()
     val name: LiveData<String?> get() = _name
 
+    private val _id = MutableLiveData<String?>()
+    val id: LiveData<String?> get() = _id
+
     private val _items = MutableLiveData<List<Track>>()
     val items: LiveData<List<Track>> get() = _items
 
@@ -35,6 +38,7 @@ class DetailPlaylistViewModel : ViewModel() {
             try {
                 val playlists = getAllPlaylists(1, 10)
                 playlists?.find { it.name == _name.value }?.let { playlist ->
+                    _id.value = playlist.id
                     val fetchedPlaylist = getPlaylistById(playlist.id)
                     _items.value = fetchedPlaylist?.items
                     _isPublic.value = fetchedPlaylist?.isPublic

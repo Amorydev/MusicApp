@@ -1,6 +1,7 @@
 package com.amory.musicapp.managers
 
 import android.util.Log
+import com.amory.musicapp.model.AddItemPlaylistResponse
 import com.amory.musicapp.model.AddPlaylistResponse
 import com.amory.musicapp.model.DetailPlaylistResponse
 import com.amory.musicapp.model.Playlist
@@ -71,6 +72,25 @@ object PlaylistManager {
                     val value = response.body()
                     callback(value)
                 }
+            }
+        })
+    }
+
+    fun addItemInPlayList(id: String, requestBody: RequestBody, callback: (Boolean) -> Unit) {
+        val callAddItemPlaylist = service.addItemPlaylist(id, requestBody)
+        callAddItemPlaylist.enqueue(object : Callback<AddItemPlaylistResponse>{
+            override fun onResponse(
+                call: Call<AddItemPlaylistResponse>,
+                response: Response<AddItemPlaylistResponse>
+            ) {
+                if (response.isSuccessful){
+                    if (response.body()?.status.equals("100 CONTINUE")){
+                        callback(true)
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<AddItemPlaylistResponse>, t: Throwable) {
             }
         })
     }

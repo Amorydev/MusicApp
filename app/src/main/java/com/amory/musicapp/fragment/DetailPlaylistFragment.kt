@@ -49,6 +49,12 @@ class DetailPlaylistFragment : Fragment() {
         binding.addMusicBtn.setOnClickListener {
             val fragment = AddItemInPlaylistFragment()
 
+            val bundle = Bundle()
+            viewModel.id.observe(viewLifecycleOwner){id->
+                bundle.putString("id",id)
+            }
+            fragment.arguments = bundle
+
             requireActivity().supportFragmentManager.beginTransaction()
                 .addToBackStack(null)
                 .replace(R.id.fragment_container,fragment)

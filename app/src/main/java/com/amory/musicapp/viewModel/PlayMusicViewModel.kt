@@ -63,7 +63,7 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
     val positionTrackResponse: LiveData<Int?> get() = _positionTrackResponse
 
     private val _uri = MutableLiveData<Uri?>()
-    val uri : LiveData<Uri?> get() = _uri
+    val uri: LiveData<Uri?> get() = _uri
 
     private var isTrackChangedFromHome: Boolean = false
 
@@ -128,7 +128,6 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
         playTrack()
     }
 
-
     private fun loadBackgroundGradient() {
         listTracks?.let { track ->
             Glide.with(getApplication<Application>().applicationContext)
@@ -155,7 +154,7 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    fun updateIsPlaying(isPlaying: Boolean){
+    fun updateIsPlaying(isPlaying: Boolean) {
         _isPlaying.value = isPlaying
     }
 
@@ -167,20 +166,21 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
     fun playMusic() {
         Log.d("PlayMusicViewModel", "playMusic called, isPlaying: ${_isPlaying.value}")
         _musicService.value?.mediaPlayer?.let {
-                _isPlaying.value = true
-                startSeekBarUpdate()
-                it.start()
+            _isPlaying.value = true
+            startSeekBarUpdate()
+            it.start()
         }
     }
 
     fun pauseMusic() {
         Log.d("PlayMusicViewModel", "pauseMusic called, isPlaying: ${_isPlaying.value}")
         _musicService.value?.mediaPlayer?.let {
-                _isPlaying.value = false
-                stopSeekBarUpdate()
-                it.pause()
+            _isPlaying.value = false
+            stopSeekBarUpdate()
+            it.pause()
         }
     }
+
     fun playMusicIfNotPlaying() {
         if (_isPlaying.value == false) {
             playMusic()
@@ -201,7 +201,8 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
             }
         }
     }
-    fun updateCurrentPosition(position: Int){
+
+    fun updateCurrentPosition(position: Int) {
         _currentPosition.value = position
     }
 
@@ -218,6 +219,9 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
                         _duration.value = duration
                         startSeekBarUpdate()
                     }
+                    setOnCompletionListener {
+                        nextTrack()  // Chuyển sang bài hát tiếp theo khi hoàn thành bài hát hiện tại
+                    }
                     prepareAsync()
                 }
             } catch (ex: Exception) {
@@ -227,7 +231,7 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-      fun startSeekBarUpdate() {
+    fun startSeekBarUpdate() {
         handler.postDelayed(object : Runnable {
             override fun run() {
                 _musicService.value?.mediaPlayer?.let {

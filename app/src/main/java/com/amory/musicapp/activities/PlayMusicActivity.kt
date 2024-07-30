@@ -144,6 +144,14 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
             }
         })
 
+        viewModel.like.observe(this) { like ->
+            like?.let {
+                if (it) binding.likeBTN.setImageResource(R.drawable.ic_love) else binding.likeBTN.setImageResource(
+                    R.drawable.ic_no_love
+                )
+            }
+        }
+
         viewModel.duration.observe(this, Observer { duration ->
             duration?.let {
                 binding.seekBar.max = it
@@ -175,12 +183,17 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         })
     }
 
+    @SuppressLint("ResourceAsColor")
     private fun setupClickListeners() {
         binding.backBtn.setOnClickListener { finish() }
         binding.shuffleBtn.setOnClickListener { viewModel.toggleShuffle() }
         binding.repeatBtn.setOnClickListener { viewModel.toggleRepeat() }
         binding.nextBtn.setOnClickListener { viewModel.nextTrack() }
         binding.previousBtn.setOnClickListener { viewModel.previousTrack() }
+        binding.likeBTN.setOnClickListener {
+            viewModel.toggleLike()
+            viewModel.addLikeMusic()
+        }
         binding.playImv.setOnClickListener {
             if (viewModel.isPlaying.value == true) {
                 viewModel.pauseMusic()

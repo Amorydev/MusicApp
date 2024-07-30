@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -19,6 +20,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.palette.graphics.Palette
 import com.amory.musicapp.managers.AudioManger
 import com.amory.musicapp.managers.AudioManger.getUriAudio
+import com.amory.musicapp.managers.TrackManager
 import com.amory.musicapp.model.Track
 import com.amory.musicapp.model.eventBus.EventPostListTrack
 import com.amory.musicapp.service.MusicService
@@ -44,6 +46,9 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
     private val _shuffle = MutableLiveData<Boolean?>()
     val shuffle: LiveData<Boolean?> get() = _shuffle
 
+    private val _like = MutableLiveData<Boolean?>()
+    val like: LiveData<Boolean?> get() = _like
+
     private val _backgroundGradient = MutableLiveData<GradientDrawable?>()
     val backgroundGradient: LiveData<GradientDrawable?> get() = _backgroundGradient
 
@@ -62,8 +67,6 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
     private val _positionTrackResponse = MutableLiveData<Int?>()
     val positionTrackResponse: LiveData<Int?> get() = _positionTrackResponse
 
-    private val _uri = MutableLiveData<Uri?>()
-    val uri: LiveData<Uri?> get() = _uri
 
     private var isTrackChangedFromHome: Boolean = false
 
@@ -75,6 +78,7 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
     init {
         _shuffle.value = false
         _repeat.value = false
+        _like.value = false
         EventBus.getDefault().register(this)
     }
 
@@ -106,6 +110,10 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
         _shuffle.value = !_shuffle.value!!
     }
 
+    fun toggleLike() {
+        _like.value = !_like.value!!
+    }
+
     fun toggleRepeat() {
         _repeat.value = !_repeat.value!!
     }
@@ -127,6 +135,7 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
         updateTrack()
         playTrack()
     }
+
 
     private fun loadBackgroundGradient() {
         listTracks?.let { track ->
@@ -160,6 +169,15 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun setMusicService(service: MusicService) {
         _musicService.value = service
+    }
+
+    fun addLikeMusic() {
+        val track = listTracks!![positionTrack]
+        viewModelScope.launch(Dispatchers.IO) {
+            TrackManager.addLikeMusic(track.id) {
+                Log.d("addLike", "Add Like Music Successfully")
+            }
+        }
     }
 
 
@@ -196,7 +214,6 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
             val track = listTracks!![positionTrack] ?: return@launch
             getUriAudio(track) { uri ->
                 val uriAudio = Uri.parse(uri)
-                _uri.value = uriAudio
                 createMediaPlayer(uriAudio)
             }
         }

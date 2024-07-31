@@ -180,6 +180,17 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch(Dispatchers.IO) {
             TrackManager.addLikeMusic(track.id) {
                 Log.d("addLike", "Add Like Music Successfully")
+                Toast.makeText(getApplication<Application>().applicationContext,"Add Like Music Successfully",Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun unLikeMusic(){
+        val track = listTracks!![positionTrack]
+        viewModelScope.launch(Dispatchers.IO) {
+            TrackManager.unLikeMusic(track.id) {
+                Log.d("unLike", "UnLike Music Successfully")
+                Toast.makeText(getApplication<Application>().applicationContext,"UnLike Music Successfully",Toast.LENGTH_SHORT).show()
             }
         }
     }

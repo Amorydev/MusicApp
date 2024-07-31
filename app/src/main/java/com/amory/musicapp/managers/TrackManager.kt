@@ -9,6 +9,7 @@ import com.amory.musicapp.adapter.PopularTrackAdapter
 import com.amory.musicapp.model.AddLikeResponse
 import com.amory.musicapp.model.Track
 import com.amory.musicapp.model.TrackResponse
+import com.amory.musicapp.model.UnLikeResponse
 import com.amory.musicapp.retrofit.APICallArtists
 import com.amory.musicapp.retrofit.APICallCatalog
 import com.amory.musicapp.retrofit.APICallTrack
@@ -61,6 +62,26 @@ object TrackManager {
             override fun onResponse(
                 call: Call<AddLikeResponse>,
                 response: Response<AddLikeResponse>
+            ) {
+                if (response.isSuccessful) {
+                    if (response.body()?.status == "OK") {
+                        callback(true)
+                    }
+                }
+            }
+        })
+    }
+
+    fun unLikeMusic(id: String, callback: (Boolean?) -> Unit) {
+        val service = RetrofitClient.retrofitInstance.create(APICallTrack::class.java)
+        val callUnLikeMusic = service.unLikeMusic(id)
+        callUnLikeMusic.enqueue(object : Callback<UnLikeResponse> {
+            override fun onFailure(call: Call<UnLikeResponse>, t: Throwable) {
+            }
+
+            override fun onResponse(
+                call: Call<UnLikeResponse>,
+                response: Response<UnLikeResponse>
             ) {
                 if (response.isSuccessful) {
                     if (response.body()?.status == "OK") {

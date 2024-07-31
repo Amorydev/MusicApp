@@ -35,7 +35,7 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         var musicServiceSend: MusicService? = null
         var listTracksSend: List<Track>? = null
         var positionTrackSend: Int = 0
-        var likeSend : Boolean ?= null
+        var likeSend: Boolean? = null
     }
 
     private var positionTrack: Int = 0
@@ -64,7 +64,7 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         }
         _isPlaying?.let { viewModel.updateIsPlaying(it) }
 
-        viewModel.like.observe(this){
+        viewModel.like.observe(this) {
             Log.d("like", "it ${it.toString()}")
             likeSend = it!!
             Log.d("like", "likeSend $likeSend")
@@ -160,6 +160,7 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
                     viewModel.addLikeMusic()
                 } else {
                     binding.likeBTN.setImageResource(R.drawable.ic_no_love)
+                    viewModel.unLikeMusic()
                 }
             }
         }

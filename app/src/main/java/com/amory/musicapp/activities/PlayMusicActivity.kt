@@ -35,6 +35,7 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         var musicServiceSend: MusicService? = null
         var listTracksSend: List<Track>? = null
         var positionTrackSend: Int = 0
+        var likeSend : Boolean ?= null
     }
 
     private var positionTrack: Int = 0
@@ -62,6 +63,13 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
             _isPlaying = it!!
         }
         _isPlaying?.let { viewModel.updateIsPlaying(it) }
+
+        viewModel.like.observe(this){
+            Log.d("like", "it ${it.toString()}")
+            likeSend = it!!
+            Log.d("like", "likeSend $likeSend")
+        }
+        likeSend?.let { viewModel.updateLike(it) }
     }
 
     private fun initView() {
@@ -146,9 +154,13 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
 
         viewModel.like.observe(this) { like ->
             like?.let {
-                if (it) binding.likeBTN.setImageResource(R.drawable.ic_love) else binding.likeBTN.setImageResource(
-                    R.drawable.ic_no_love
-                )
+                likeSend = like
+                if (it) {
+                    binding.likeBTN.setImageResource(R.drawable.ic_love)
+                    viewModel.addLikeMusic()
+                } else {
+                    binding.likeBTN.setImageResource(R.drawable.ic_no_love)
+                }
             }
         }
 
@@ -192,7 +204,6 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         binding.previousBtn.setOnClickListener { viewModel.previousTrack() }
         binding.likeBTN.setOnClickListener {
             viewModel.toggleLike()
-            viewModel.addLikeMusic()
         }
         binding.playImv.setOnClickListener {
             if (viewModel.isPlaying.value == true) {

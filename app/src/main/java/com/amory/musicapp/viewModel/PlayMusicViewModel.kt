@@ -167,6 +167,10 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
         _isPlaying.value = isPlaying
     }
 
+    fun updateLike(isLike:Boolean){
+        _like.value = isLike
+    }
+
     fun setMusicService(service: MusicService) {
         _musicService.value = service
     }

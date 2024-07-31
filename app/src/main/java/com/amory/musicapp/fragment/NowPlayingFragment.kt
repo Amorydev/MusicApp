@@ -26,21 +26,20 @@ class NowPlayingFragment : Fragment() {
     ): View {
         _binding = FragmentNowPlayingBinding.inflate(inflater, container, false)
         nowPlayingViewModel.init()
-        binding.imvPlay.setOnClickListener {
-            nowPlayingViewModel.playOrPauseMusic()
-        }
-        binding.nextBtn.setOnClickListener {
-            nowPlayingViewModel.nextSong()
-        }
+        initialViews()
+        setClick()
+        return binding.root
+    }
+
+    private fun setClick() {
+        binding.imvPlay.setOnClickListener { nowPlayingViewModel.playOrPauseMusic() }
+        binding.nextBtn.setOnClickListener { nowPlayingViewModel.nextSong() }
+        binding.likeNowBTN.setOnClickListener { nowPlayingViewModel.toggleLike() }
         binding.root.visibility = View.INVISIBLE
 
         binding.root.setOnClickListener {
             openPlayMusicActivity()
         }
-
-        initialViews()
-
-        return binding.root
     }
 
     private fun initialViews() {
@@ -50,12 +49,24 @@ class NowPlayingFragment : Fragment() {
             Glide.with(binding.root).load(track?.thumbnail).into(binding.imvTrack)
         }
         PlayMusicActivity._isPlaying?.let { nowPlayingViewModel.updateIsPlaying(it) }
+        Log.d("like", PlayMusicActivity.likeSend.toString())
+        PlayMusicActivity.likeSend?.let { nowPlayingViewModel.updateLike(it) }
         nowPlayingViewModel.isPlaying.observe(viewLifecycleOwner) { isPlaying ->
             Log.d("isPlayingNow", isPlaying.toString())
             binding.imvPlay.setImageResource(
                 if (isPlaying) R.drawable.ic_pause_now else R.drawable.ic_play_now
             )
             PlayMusicActivity._isPlaying = isPlaying
+        }
+        nowPlayingViewModel.backgroundGradient.observe(viewLifecycleOwner) {
+            binding.CardView.setCardBackgroundColor(it!!)
+        }
+
+        nowPlayingViewModel.isLike.observe(viewLifecycleOwner){like->
+            like?.let {
+                if (it) binding.likeNowBTN.setImageResource(R.drawable.ic_love) else binding.likeNowBTN.setImageResource(R.drawable.ic_no_love)
+            }
+            PlayMusicActivity.likeSend = like
         }
     }
 

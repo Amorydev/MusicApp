@@ -74,7 +74,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun onCLickSearch() {
-        binding.searchET.setOnClickListener {
+        binding.searchBTN.setOnClickListener {
             val fragment = SearchFragment()
 
             requireActivity().supportFragmentManager.beginTransaction()

@@ -89,14 +89,22 @@ class HomeFragment : Fragment() {
     }
 
     private fun observeViewModel(){
+        binding.shimmerLayoutTrack.startShimmer()
+        binding.shimmerLayoutArtist.startShimmer()
         viewModel.itemTrack.observe(viewLifecycleOwner, Observer { itemTrack ->
             itemTrack?.let {
+                binding.shimmerLayoutTrack.stopShimmer()
+                binding.popularTracks.visibility = View.VISIBLE
+                binding.shimmerLayoutTrack.visibility = View.GONE
                 setRecyclerViewPopularTracks(it)
                 Log.d("itemTrack", itemTrack.toString())
             }
         })
         viewModel.itemArtists.observe(viewLifecycleOwner, Observer { itemArtist ->
             itemArtist?.let {
+                binding.shimmerLayoutArtist.stopShimmer()
+                binding.rvPopularArtists.visibility = View.VISIBLE
+                binding.shimmerLayoutArtist.visibility = View.GONE
                 setRecyclerViewPopularArtists(it)
             }
         })

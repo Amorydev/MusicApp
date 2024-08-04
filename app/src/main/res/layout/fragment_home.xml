@@ -3,11 +3,14 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
         <variable
             name="viewModel"
             type="com.amory.musicapp.viewModel.HomeViewModel" />
     </data>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -117,12 +120,40 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="@+id/textView2" />
 
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/shimmerLayoutArtist"
+                            android:layout_width="match_parent"
+                            android:layout_height="120dp"
+                            android:layout_marginHorizontal="5dp"
+                            android:layout_marginTop="10dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/textView2">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="horizontal">
+
+                                <include layout="@layout/layout_artist_shimmer" />
+
+                                <include layout="@layout/layout_artist_shimmer" />
+
+                                <include layout="@layout/layout_artist_shimmer" />
+
+                                <include layout="@layout/layout_artist_shimmer" />
+
+                            </LinearLayout>
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/rv_popularArtists"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="10dp"
+                            android:layout_height="120dp"
+                            android:layout_marginHorizontal="5dp"
                             android:layout_marginTop="10dp"
+                            android:visibility="gone"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
@@ -163,13 +194,44 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="@+id/textView" />
 
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/shimmerLayoutTrack"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/textView">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical">
+
+                                <include layout="@layout/layout_track_shimmer" />
+
+                                <include layout="@layout/layout_track_shimmer" />
+
+                                <include layout="@layout/layout_track_shimmer" />
+
+                                <include layout="@layout/layout_track_shimmer" />
+
+                                <include layout="@layout/layout_track_shimmer" />
+
+                                <include layout="@layout/layout_track_shimmer" />
+
+                            </LinearLayout>
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/popular_tracks"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="10dp"
+                            android:layout_marginHorizontal="5dp"
                             android:layout_marginTop="10dp"
                             android:overScrollMode="never"
+                            android:visibility="gone"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"

@@ -52,8 +52,8 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
     implementation("androidx.palette:palette-ktx:1.0.0")
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.0")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.0")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 
     //SpinKit(Custom progressBar)
     implementation("com.github.ybq:Android-SpinKit:1.4.0")
@@ -94,6 +94,8 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.8.4")
     //Fragment
     implementation ("androidx.fragment:fragment-ktx:1.8.2")
+    //skeleton
+    implementation("com.facebook.shimmer:shimmer:0.5.0")
 
 
 }

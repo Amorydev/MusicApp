@@ -18,6 +18,7 @@ import com.amory.musicapp.databinding.ActivityMainBinding
 import com.amory.musicapp.fragment.HomeFragment
 import com.amory.musicapp.fragment.LibraryFragment
 import com.amory.musicapp.fragment.ProfileFragment
+import com.amory.musicapp.fragment.SearchFragment
 import com.amory.musicapp.model.TokenClientResponse
 import com.amory.musicapp.retrofit.APICallToken
 import com.amory.musicapp.retrofit.RetrofitClient
@@ -99,6 +100,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.search ->{
+                    replaceFragment(SearchFragment())
                     true
                 }
 

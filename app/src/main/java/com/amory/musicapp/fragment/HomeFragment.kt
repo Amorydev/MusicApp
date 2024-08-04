@@ -16,7 +16,6 @@ import com.amory.musicapp.Interface.OnCLickArtist
 import com.amory.musicapp.Interface.OnCLickTrack
 import com.amory.musicapp.R
 import com.amory.musicapp.activities.PlayMusicActivity
-import com.amory.musicapp.activities.SearchActivity
 import com.amory.musicapp.activities.SeeMoreTracksActivity
 import com.amory.musicapp.adapter.PopularArtistsAdapter
 import com.amory.musicapp.adapter.PopularTrackAdapter
@@ -50,6 +49,7 @@ class HomeFragment : Fragment() {
         onClickSeeMoreTracks()
         return binding.root
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.init()
@@ -75,12 +75,14 @@ class HomeFragment : Fragment() {
 
     private fun onCLickSearch() {
         binding.searchET.setOnClickListener {
-            val intent = Intent(requireContext(), SearchActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)
+            val fragment = SearchFragment()
+
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit()
         }
     }
-
 
 
     override fun onDestroy() {
@@ -88,7 +90,7 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
-    private fun observeViewModel(){
+    private fun observeViewModel() {
         binding.shimmerLayoutTrack.startShimmer()
         binding.shimmerLayoutArtist.startShimmer()
         viewModel.itemTrack.observe(viewLifecycleOwner, Observer { itemTrack ->

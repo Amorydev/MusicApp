@@ -34,6 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20sp"
                 android:text="Thêm bài hát"
+                android:fontFamily="@font/asap"
                 android:textColor="@color/white"
                 android:textSize="24sp"
                 android:textStyle="bold"
@@ -72,6 +73,7 @@
                     android:background="@android:color/transparent"
                     android:layout_marginStart="10dp"
                     android:hint="Tìm kiếm bài hát"
+                    android:fontFamily="@font/asap"
                     android:textSize="15sp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>

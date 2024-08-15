@@ -22,6 +22,7 @@
         android:layout_height="wrap_content"
         android:text="Sơn Tùng M-TP"
         android:textAlignment="center"
+        android:fontFamily="@font/asap"
         android:textColor="@color/white"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"

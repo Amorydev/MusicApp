@@ -30,6 +30,7 @@
         android:text="Playlist của tôi"
         android:textSize="14sp"
         android:textStyle="bold"
+        android:fontFamily="@font/asap"
         app:layout_constraintStart_toEndOf="@+id/cardView3"
         app:layout_constraintTop_toTopOf="@+id/cardView3" />
 
@@ -38,6 +39,7 @@
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:text="Nguyễn Đức Quyền"
+        android:fontFamily="@font/asap"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/cardView3"
         app:layout_constraintStart_toStartOf="@+id/namePlaylistTxt"

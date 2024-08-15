@@ -31,6 +31,7 @@
         android:layout_marginTop="10dp"
         android:textSize="16sp"
         android:textColor="@color/black"
+        android:fontFamily="@font/asap"
         android:text="Muộn rồi mà sao còn - Remix"
         app:layout_constraintStart_toEndOf="@+id/cardView"
         app:layout_constraintTop_toTopOf="@+id/cardView" />
@@ -42,6 +43,7 @@
         android:layout_marginTop="5dp"
         android:text="BOMATELA, Sơn Tùng M-TP"
         android:textSize="14sp"
+        android:fontFamily="@font/asap"
         android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="@+id/txt_songName"
         app:layout_constraintTop_toBottomOf="@+id/txt_songName" />

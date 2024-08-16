@@ -162,10 +162,8 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
                 likeSend = like
                 if (it) {
                     binding.likeBTN.setImageResource(R.drawable.ic_love)
-                    viewModel.addLikeMusic()
                 } else {
                     binding.likeBTN.setImageResource(R.drawable.ic_no_love)
-                    viewModel.unLikeMusic()
                 }
             }
         }
@@ -210,6 +208,13 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         binding.previousBtn.setOnClickListener { viewModel.previousTrack() }
         binding.likeBTN.setOnClickListener {
             viewModel.toggleLike()
+            viewModel.like.observe(this){like ->
+                if (like!!){
+                   viewModel.addLikeMusic()
+                }else{
+                    viewModel.unLikeMusic()
+                }
+            }
         }
         binding.playImv.setOnClickListener {
             if (viewModel.isPlaying.value == true) {

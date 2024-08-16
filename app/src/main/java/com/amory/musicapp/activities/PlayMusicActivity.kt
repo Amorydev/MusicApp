@@ -88,6 +88,12 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
                 viewModel.setPositionTrack(positionTrack)
                 viewModel.playMusicIfNotPlaying()
             }
+            "DetailArtistFragment" ->{
+                setupObservers()
+                setupClickListeners()
+                viewModel.setPositionTrack(positionTrack)
+                viewModel.playMusicIfNotPlaying()
+            }
 
             "NowPlayingFragment" -> {
                 val currentPosition = intent.getIntExtra("currentPosition", 0)

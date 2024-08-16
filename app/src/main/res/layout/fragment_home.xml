@@ -106,7 +106,7 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
-                        <TextView
+                        <!--<TextView
                             android:id="@+id/seeMoreArtistsTxt"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -119,7 +119,7 @@
                             app:layout_constraintBottom_toBottomOf="@+id/textView2"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="@+id/textView2" />
-
+-->
                         <com.facebook.shimmer.ShimmerFrameLayout
                             android:id="@+id/shimmerLayoutArtist"
                             android:layout_width="match_parent"

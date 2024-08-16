@@ -70,9 +70,10 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
 
     private var isTrackChangedFromHome: Boolean = false
 
+    private val positionTrack = MutableLiveData<Int>()
+
     @SuppressLint("StaticFieldLeak")
     private var listTracks: List<Track>? = null
-    private var positionTrack: Int = 0
     private val handler = Handler(Looper.getMainLooper())
 
     init {
@@ -94,9 +95,10 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
 
     private fun updateTrack() {
         viewModelScope.launch {
-            _track.value = listTracks!![positionTrack]
-            _positionTrackResponse.value = positionTrack
+            _track.value = listTracks!![positionTrack.value!!]
+            _positionTrackResponse.value = positionTrack.value
             Log.d("PlayMusicViewModel", _positionTrackResponse.value.toString())
+            Log.d("tracks", listTracks!![positionTrack.value!!].toString())
             loadBackgroundGradient()
         }
     }
@@ -119,19 +121,19 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun nextTrack() {
-        positionTrack = (positionTrack + 1) % (listTracks?.size ?: 1)
+        positionTrack.value = (positionTrack.value!! + 1) % (listTracks?.size ?: 1)
         updateTrack()
         playTrack()
     }
 
     fun previousTrack() {
-        positionTrack = (positionTrack - 1 + (listTracks?.size ?: 1)) % (listTracks?.size ?: 1)
+        positionTrack.value = (positionTrack.value!! - 1 + (listTracks?.size ?: 1)) % (listTracks?.size ?: 1)
         updateTrack()
         playTrack()
     }
 
     fun setPositionTrack(position: Int) {
-        positionTrack = position
+        positionTrack.value = position
         updateTrack()
         playTrack()
     }
@@ -141,7 +143,7 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
         listTracks?.let { track ->
             Glide.with(getApplication<Application>().applicationContext)
                 .asBitmap()
-                .load(track[positionTrack].thumbnail)
+                .load(track[positionTrack.value!!].thumbnail)
                 .into(object : CustomTarget<Bitmap>() {
                     override fun onResourceReady(
                         resource: Bitmap,
@@ -167,6 +169,11 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
         _isPlaying.value = isPlaying
     }
 
+    fun updatePositionTrack(position: Int){
+        positionTrack.value = position
+        updateTrack()
+    }
+
     fun updateLike(isLike:Boolean){
         _like.value = isLike
     }
@@ -176,7 +183,7 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun addLikeMusic() {
-        val track = listTracks!![positionTrack]
+        val track = listTracks!![positionTrack.value!!]
         viewModelScope.launch(Dispatchers.IO) {
             TrackManager.addLikeMusic(track.id) {
                 Log.d("addLike", "Add Like Music Successfully")
@@ -186,7 +193,7 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun unLikeMusic(){
-        val track = listTracks!![positionTrack]
+        val track = listTracks!![positionTrack.value!!]
         viewModelScope.launch(Dispatchers.IO) {
             TrackManager.unLikeMusic(track.id) {
                 Log.d("unLike", "UnLike Music Successfully")
@@ -226,7 +233,7 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
         }
         isTrackChangedFromHome = false  // Reset flag after use
         viewModelScope.launch(Dispatchers.IO) {
-            val track = listTracks!![positionTrack] ?: return@launch
+            val track = listTracks!![positionTrack.value!!] ?: return@launch
             getUriAudio(track) { uri ->
                 val uriAudio = Uri.parse(uri)
                 createMediaPlayer(uriAudio)

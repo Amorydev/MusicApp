@@ -53,19 +53,24 @@
                         app:layout_constraintTop_toTopOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:orientation="horizontal">
+                    android:layout_height="wrap_content">
 
                     <androidx.cardview.widget.CardView
-                        android:layout_width="80dp"
-                        android:layout_height="100dp"
+                        android:id="@+id/cardView5"
+                        android:layout_width="100dp"
+                        android:layout_height="80dp"
                         android:layout_gravity="center"
                         android:layout_marginHorizontal="10dp"
                         android:layout_weight="1"
                         android:elevation="4dp"
-                        app:cardCornerRadius="10dp">
+                        app:cardCornerRadius="10dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/cardView4"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
@@ -76,7 +81,7 @@
                                 android:id="@+id/love"
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
-                                android:layout_marginTop="10dp"
+                                android:layout_marginTop="5dp"
                                 android:background="@drawable/ic_love"
                                 android:backgroundTint="#03A9F4"
                                 app:layout_constraintEnd_toEndOf="parent"
@@ -86,8 +91,8 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Yêu thích"
                                 android:fontFamily="@font/asap"
+                                android:text="Yêu thích"
                                 android:textSize="18sp"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
@@ -97,13 +102,19 @@
                     </androidx.cardview.widget.CardView>
 
                     <androidx.cardview.widget.CardView
-                        android:layout_width="80dp"
-                        android:layout_height="100dp"
+                        android:id="@+id/cardView4"
+                        android:layout_width="100dp"
+                        android:layout_height="80dp"
                         android:layout_gravity="center"
                         android:layout_marginHorizontal="10dp"
                         android:layout_weight="1"
                         android:elevation="4dp"
-                        app:cardCornerRadius="10dp">
+                        app:cardCornerRadius="10dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/cardView6"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/cardView5"
+                        app:layout_constraintTop_toTopOf="parent">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
@@ -114,7 +125,7 @@
                                 android:id="@+id/download"
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
-                                android:layout_marginTop="10dp"
+                                android:layout_marginTop="5dp"
                                 android:background="@drawable/ic_downloading"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -123,9 +134,9 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:fontFamily="@font/asap"
                                 android:text="Đã tải"
                                 android:textSize="18sp"
-                                android:fontFamily="@font/asap"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -134,13 +145,19 @@
                     </androidx.cardview.widget.CardView>
 
                     <androidx.cardview.widget.CardView
-                        android:layout_width="80dp"
-                        android:layout_height="100dp"
+                        android:id="@+id/cardView6"
+                        android:layout_width="100dp"
+                        android:layout_height="80dp"
                         android:layout_gravity="center"
                         android:layout_marginHorizontal="10dp"
                         android:layout_weight="1"
                         android:elevation="4dp"
-                        app:cardCornerRadius="10dp">
+                        app:cardCornerRadius="10dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/cardView4"
+                        app:layout_constraintTop_toTopOf="parent">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
@@ -151,7 +168,7 @@
                                 android:id="@+id/artist"
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
-                                android:layout_marginTop="10dp"
+                                android:layout_marginTop="5dp"
                                 android:background="@drawable/ic_artist"
                                 android:backgroundTint="#03A9F4"
                                 app:layout_constraintEnd_toEndOf="parent"
@@ -161,20 +178,21 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:fontFamily="@font/asap"
                                 android:text="Nghệ sĩ"
                                 android:textSize="18sp"
-                                android:fontFamily="@font/asap"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="@id/artist" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
                     </androidx.cardview.widget.CardView>
-                </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Playlist"
+                    android:layout_marginTop="10dp"
                     android:fontFamily="@font/asap"
                     android:textColor="@color/white"
                     android:textSize="24sp"
@@ -187,17 +205,17 @@
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/AddPlaylistCV"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_marginStart="15dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="20dp"
                         app:cardBackgroundColor="@color/bottom_nav_item_color"
                         app:cardCornerRadius="8dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
 
                         <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
                             android:layout_gravity="center"
                             android:background="@drawable/ic_add" />
                     </androidx.cardview.widget.CardView>
@@ -232,6 +250,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:scrollbars="none"
                     android:layout_margin="10dp"/>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>

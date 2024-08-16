@@ -86,6 +86,10 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
                 val currentPosition = intent.getIntExtra("currentPosition", 0)
                 viewModel.updateCurrentPosition(currentPosition)
 
+                val positionTrack = intent.getIntExtra("positionTrack",0)
+                Log.d("position", positionTrack.toString())
+                viewModel.updatePositionTrack(positionTrack)
+
                 viewModel.musicService.observe(this, Observer { musicService ->
                     binding.startDurationTXT.text =
                         musicService?.mediaPlayer?.currentPosition?.toLong()?.let { formatTime(it) }
@@ -115,6 +119,7 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
                 binding.nameArtistTXT.text = it.artists.joinToString(", ") { artist -> artist.name }
                 binding.songNameTXT.text = it.name
                 Glide.with(binding.root).load(it.thumbnail).into(binding.imvTrack)
+                Log.d("currentTrack", track.toString())
             }
         })
 
@@ -232,6 +237,7 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         val binder = service as MusicService.MyBinder
         val musicService = binder.currentService()
         viewModel.setMusicService(musicService)
+
     }
 
     override fun onServiceDisconnected(name: ComponentName?) {

@@ -18,7 +18,7 @@ class SeeMoreTracksActivity : AppCompatActivity() {
     private val seeMoreTrackViewModel: SeeMoreTrackViewModel by viewModels<SeeMoreTrackViewModel>()
     private var page: Int = 1
     private lateinit var adapterSeeMoreTrack: SeeMoreTrackAdapter
-    private val listTracks : MutableList<Track> = mutableListOf()
+    private val listTracks: MutableList<Track> = mutableListOf()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,13 +27,19 @@ class SeeMoreTracksActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         adapterSeeMoreTrack = SeeMoreTrackAdapter(listTracks)
-        seeMoreTrackViewModel.getTrack(page, 20)
 
-        seeMoreTrackViewModel.listTrack.observe(this) { tracks ->
-            adapterSeeMoreTrack.addData(tracks as MutableList<Track>)
-            setRecyclerView()
+        observerData()
+
+        setRecyclerView()
+        onScrollRv()
+        adapterSeeMoreTrack.setOnSeeMoreClickListener {
+            loadMoreData()
+            /*Toast.makeText(this, "SeeMore Click", Toast.LENGTH_SHORT).show()*/
         }
+        onClickListenerBack()
+    }
 
+    private fun onScrollRv() {
         binding.tracksRv.addOnScrollListener(object : OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -42,29 +48,36 @@ class SeeMoreTracksActivity : AppCompatActivity() {
                 val totalItem = layout.itemCount
                 val lastItem = layout.findLastVisibleItemPosition()
 
-                if (!adapterSeeMoreTrack.showSeeMoreButton && totalItem <= lastItem + 2) {
+                if (!adapterSeeMoreTrack.showSeeMoreButton && totalItem <= lastItem + 3) {
                     adapterSeeMoreTrack.showSeeMore()
                 }
             }
         })
-        adapterSeeMoreTrack.setOnSeeMoreClickListener {
-            loadMoreData()
-            /*Toast.makeText(this, "SeeMore Click", Toast.LENGTH_SHORT).show()*/
-        }
     }
-    private fun loadMoreData(){
-        page++
-        seeMoreTrackViewModel.getTrack(page, 20)
-        seeMoreTrackViewModel.listTrack.observe(this){ tracks ->
-            adapterSeeMoreTrack.addData(tracks as MutableList<Track>)
-            setRecyclerView()
-        }
 
+    private fun loadMoreData() {
+        page++
+        observerData()
     }
-    private fun setRecyclerView(){
+
+    private fun observerData() {
+        seeMoreTrackViewModel.getTrack(page, 20)
+        seeMoreTrackViewModel.listTrack.observe(this) { tracks ->
+            adapterSeeMoreTrack.addData(tracks as MutableList<Track>)
+        }
+    }
+
+    private fun setRecyclerView() {
         binding.tracksRv.adapter = adapterSeeMoreTrack
-        binding.tracksRv.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.tracksRv.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.tracksRv.setHasFixedSize(true)
+    }
+
+    private fun onClickListenerBack() {
+        binding.backBTN.setOnClickListener {
+            onBackPressed()
+        }
     }
 
 }

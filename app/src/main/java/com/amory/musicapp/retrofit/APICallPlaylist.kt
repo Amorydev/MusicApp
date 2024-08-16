@@ -36,6 +36,7 @@ interface APICallPlaylist {
     ): Call<DetailPlaylistResponse>
 
     @PUT("playlists/{id}/add-item")
+    @Multipart
     fun addItemPlaylist(
         @Path("id") id:String,
         @Part("RequestBody") requestBody: RequestBody

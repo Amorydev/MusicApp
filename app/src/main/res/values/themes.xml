@@ -20,5 +20,9 @@
 
     <style name="Theme.BottomNavigationApp.BottomNavigationView" parent="Theme.Material3.Dark.NoActionBar">
     </style>
+    <style name="BottomSheetDialog">
+        <item name="android:windowEnterAnimation">@anim/bottomsheet_side_in</item>
+        <item name="android:windowExitAnimation">@anim/bottomsheet_side_out</item>
+    </style>
 
 </resources>

@@ -61,7 +61,7 @@ class AddItemInPlaylistFragment : Fragment() {
     private fun setUpRecyclerViewSearchResult(listTracks: List<Track?>?) {
         val adapter = AddItemInPlaylistAdapter(listTracks!!, object : OnClickBtnAddMusicInPlaylist {
             override fun onClickBtnAddMusicInPlaylist(position: Int) {
-                Toast.makeText(requireContext(), "add music click", Toast.LENGTH_SHORT).show()
+                /*Toast.makeText(requireContext(), "add music click", Toast.LENGTH_SHORT).show()*/
                 val id = arguments?.getString("id")
                 val idTrack = listTracks[position]?.urn?.let {
                     RequestBody.create(

@@ -19,17 +19,15 @@ class HomeViewModel:ViewModel() {
     private val _itemArtists = MutableLiveData<MutableList<Artists>?>()
     val itemArtists: MutableLiveData<MutableList<Artists>?> get() = _itemArtists
 
-    private var isDataLoaded = false
 
     var trackListState: Parcelable? = null
     var artistListState: Parcelable? = null
 
 
     fun init() {
-        if (!isDataLoaded) {
+        if (_itemTrack.value == null && _itemArtists.value == null) {
             getPopularTracks()
             getPopularArtists()
-            isDataLoaded = true
         }
 
     }

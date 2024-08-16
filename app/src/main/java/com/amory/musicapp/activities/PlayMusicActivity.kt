@@ -1,6 +1,7 @@
 package com.amory.musicapp.activities
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
@@ -8,9 +9,14 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.ServiceConnection
 import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
+import android.view.Gravity
+import android.view.ViewGroup
+import android.view.Window
 import android.view.animation.LinearInterpolator
 import android.widget.SeekBar
 import androidx.activity.viewModels
@@ -24,6 +30,7 @@ import com.amory.musicapp.model.Track
 import com.amory.musicapp.service.MusicService
 import com.amory.musicapp.viewModel.PlayMusicViewModel
 import com.bumptech.glide.Glide
+import com.google.android.material.bottomsheet.BottomSheetDialog
 
 
 class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
@@ -206,6 +213,7 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
         binding.repeatBtn.setOnClickListener { viewModel.toggleRepeat() }
         binding.nextBtn.setOnClickListener { viewModel.nextTrack() }
         binding.previousBtn.setOnClickListener { viewModel.previousTrack() }
+        binding.addPlaylistBtn.setOnClickListener { showDialog() }
         binding.likeBTN.setOnClickListener {
             viewModel.toggleLike()
             viewModel.like.observe(this){like ->
@@ -236,6 +244,16 @@ class PlayMusicActivity : AppCompatActivity(), ServiceConnection {
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
+    }
+
+    private fun showDialog() {
+        val dialog = BottomSheetDialog(this)
+        dialog.setContentView(R.layout.layout_bottomsheet_dialog_additem)
+        dialog.setCancelable(true)
+        dialog.setCanceledOnTouchOutside(true)
+
+        dialog.show()
+        dialog.window?.attributes?.windowAnimations = R.style.BottomSheetDialog
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {

@@ -1,5 +1,6 @@
 package com.amory.musicapp.viewModel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -46,6 +47,7 @@ class AddItemInPlaylistViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             PlaylistManager.addItemInPlayList(id, requestBody) {
                 _isSuccess.value = it
+                Log.d("playlist","Add Item successfully")
             }
         }
     }

@@ -81,6 +81,7 @@ class HomeFragment : Fragment() {
                 .replace(R.id.fragment_container, fragment)
                 .addToBackStack(null)
                 .commit()
+
         }
     }
 

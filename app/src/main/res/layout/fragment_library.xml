@@ -237,8 +237,10 @@
                     android:id="@+id/playlistRV"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:scrollbars="none"
+                    app:fastScrollEnabled="false"
                     android:layout_margin="10dp"/>
-                <TextView
+                <!--<TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Playlist gợi ý"
@@ -251,7 +253,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:scrollbars="none"
-                    android:layout_margin="10dp"/>
+                    android:layout_margin="10dp"/>-->
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -29,6 +29,7 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -185,9 +186,14 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
     fun addLikeMusic() {
         val track = listTracks!![positionTrack.value!!]
         viewModelScope.launch(Dispatchers.IO) {
-            TrackManager.addLikeMusic(track.id) {
+            fetchAddLikeMusic(track.id)
+        }
+    }
+
+    private suspend fun fetchAddLikeMusic(id : String){
+        return withContext(Dispatchers.IO){
+            TrackManager.addLikeMusic(id) {
                 Log.d("addLike", "Add Like Music Successfully")
-                Toast.makeText(getApplication<Application>().applicationContext,"Add Like Music Successfully",Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -195,9 +201,14 @@ class PlayMusicViewModel(application: Application) : AndroidViewModel(applicatio
     fun unLikeMusic(){
         val track = listTracks!![positionTrack.value!!]
         viewModelScope.launch(Dispatchers.IO) {
-            TrackManager.unLikeMusic(track.id) {
+           fetchUnLikeMusic(track.id)
+        }
+    }
+
+    private suspend fun fetchUnLikeMusic(id: String){
+        return withContext(Dispatchers.IO){
+            TrackManager.unLikeMusic(id) {
                 Log.d("unLike", "UnLike Music Successfully")
-                Toast.makeText(getApplication<Application>().applicationContext,"UnLike Music Successfully",Toast.LENGTH_SHORT).show()
             }
         }
     }

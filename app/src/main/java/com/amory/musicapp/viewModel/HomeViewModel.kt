@@ -10,7 +10,9 @@ import com.amory.musicapp.managers.ArtistManager
 import com.amory.musicapp.managers.TrackManager
 import com.amory.musicapp.model.Artists
 import com.amory.musicapp.model.Track
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class HomeViewModel:ViewModel() {
     private val _itemTrack = MutableLiveData<MutableList<Track>?>()
@@ -34,17 +36,37 @@ class HomeViewModel:ViewModel() {
 
      private fun getPopularTracks() {
        viewModelScope.launch {
+          try {
+              val tracks = fetchDataPopularTracks()
+              _itemTrack.postValue(tracks as MutableList<Track>)
+          }catch (ex: Exception){
+              Log.d("Error", ex.toString())
+          }
+       }
+    }
+    private suspend fun fetchDataPopularTracks(){
+       return withContext(Dispatchers.IO){
            TrackManager.getTrack(1, 10) { track ->
-               _itemTrack.postValue(track as MutableList<Track>?)
-               Log.d("tracks", track.toString())
+               track!!
            }
        }
     }
 
     private fun getPopularArtists() {
         viewModelScope.launch {
+            try {
+                val artists = fetchDataPopularArtist()
+                _itemArtists.postValue(artists as MutableList<Artists>)
+            }catch (ex: Exception){
+                Log.d("Error", ex.toString())
+            }
+        }
+    }
+
+    private suspend fun fetchDataPopularArtist() {
+        return withContext(Dispatchers.IO) {
             ArtistManager.getArtist(1, 5) { artists ->
-                _itemArtists.postValue(artists)
+                artists!!
             }
         }
     }
